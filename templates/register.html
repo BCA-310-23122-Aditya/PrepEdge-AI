@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Register — My InterviewAI</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --accent:#7b68ee;--accent2:#a78bfa;--text:#e8eaf6;--text2:#9ba3c2;--text3:#555e82;
+  --red:#f87171;--green:#34d399;--amber:#fbbf24;
+  --bg:#07080f;--card-bg:rgba(255,255,255,.04);--border:rgba(123,104,238,.2);
+  --input-bg:rgba(255,255,255,.05);--input-border:rgba(255,255,255,.09);
+}
+[data-theme="light"]{
+  --bg:#f5f4f0;--card-bg:rgba(255,255,255,.92);--border:rgba(79,70,229,.2);
+  --text:#1a1523;--text2:#4b4569;--text3:#8b85a0;
+  --accent:#4f46e5;--accent2:#6d28d9;--red:#dc2626;--green:#059669;--amber:#d97706;
+  --input-bg:rgba(255,255,255,.85);--input-border:rgba(0,0,0,.12);
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:1rem 0;transition:background .3s}
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background:radial-gradient(ellipse 80% 70% at 80% 10%,rgba(167,139,250,.2) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 50% at 10% 80%,rgba(34,211,238,.1) 0%,transparent 55%),
+             linear-gradient(160deg,#07080f 0%,#0a0c1a 50%,#07080f 100%);animation:aur 18s ease-in-out infinite alternate}
+[data-theme="light"] body::before{background:radial-gradient(ellipse 80% 70% at 80% 10%,rgba(99,102,241,.1) 0%,transparent 60%),linear-gradient(160deg,#f5f4f0 0%,#edecea 50%,#f5f4f0 100%);animation:none}
+@keyframes aur{0%{opacity:1}100%{opacity:.8}}
+.theme-btn{position:fixed;top:16px;right:16px;z-index:100;width:38px;height:38px;border-radius:10px;border:1px solid var(--border);background:var(--card-bg);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(12px);transition:all .2s;}
+.theme-btn:hover{transform:scale(1.08)}
+.card{position:relative;z-index:1;width:100%;max-width:430px;background:var(--card-bg);border:1px solid var(--border);border-radius:24px;padding:2.5rem 2rem;backdrop-filter:blur(20px);box-shadow:0 24px 80px rgba(0,0,0,.5);animation:cardIn .5s cubic-bezier(.22,1,.36,1)}
+@keyframes cardIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:860px){.hero-side{display:none!important}.page-wrap{grid-template-columns:1fr!important}}
+.logo-area{text-align:center;margin-bottom:1.75rem}
+.logo-icon{width:52px;height:52px;background:linear-gradient(135deg,#7b68ee,#a78bfa);border-radius:16px;display:inline-flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:.75rem;box-shadow:0 8px 32px rgba(123,104,238,.45)}
+.logo-name{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;background:linear-gradient(130deg,#c4b5fd,#7b68ee,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);margin-bottom:.3rem;text-align:center}
+.page-sub{font-size:13px;color:var(--text3);text-align:center;margin-bottom:1.5rem}
+.flash{padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:.6rem;line-height:1.5}
+.flash.error{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);color:var(--red)}
+.flash.success{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);color:var(--green)}
+.field{margin-bottom:.9rem}
+label{display:block;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;font-family:'Syne',sans-serif}
+input{width:100%;padding:11px 14px;background:var(--input-bg);border:1px solid var(--input-border);border-radius:11px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:all .2s}
+input:focus{border-color:rgba(123,104,238,.5);background:rgba(123,104,238,.07);box-shadow:0 0 0 3px rgba(123,104,238,.12)}
+input.valid{border-color:rgba(52,211,153,.4)}
+input.invalid{border-color:rgba(248,113,113,.4)}
+input::placeholder{color:var(--text3)}
+.hint{font-size:11px;color:var(--text3);margin-top:4px}
+.field-err{font-size:11px;color:var(--red);margin-top:4px;display:none}
+/* Password strength */
+.pw-bar-wrap{height:4px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;margin-top:6px}
+.pw-bar{height:4px;border-radius:4px;width:0;transition:width .3s,background .3s}
+.pw-hint{font-size:11px;margin-top:3px}
+/* Requirements checklist */
+.req-list{margin-top:8px;display:none}
+.req-list.show{display:block}
+.req{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:5px;margin-bottom:2px;transition:color .2s}
+.req.met{color:var(--green)}
+.req-dot{width:6px;height:6px;border-radius:50%;background:currentColor;flex-shrink:0}
+.btn{width:100%;padding:13px;margin-top:.5rem;background:linear-gradient(135deg,#7b68ee,#a78bfa,#60a5fa);background-size:200% 200%;animation:gradMove 4s ease infinite;color:#fff;border:none;border-radius:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 20px rgba(123,104,238,.4);transition:all .2s}
+@keyframes gradMove{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(123,104,238,.55)}
+.alt-link{text-align:center;margin-top:1.25rem;font-size:13px;color:var(--text3)}
+.alt-link a{color:var(--accent2);text-decoration:none;font-weight:600}
+.alt-link a:hover{color:#fff}
+/* Password eye toggle */
+.pw-field-wrap{position:relative;display:block}
+.pw-field-wrap input{padding-right:42px!important}
+.pw-eye-btn{position:absolute;right:11px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);display:flex;align-items:center;justify-content:center;padding:5px;border-radius:6px;transition:color .2s,background .2s;line-height:1;z-index:2}
+.pw-eye-btn:hover{color:var(--accent2);background:rgba(123,104,238,.1)}
+[data-theme="light"] .pw-eye-btn:hover{background:rgba(79,70,229,.08)}
+.pw-eye-btn svg{display:block;pointer-events:none}
+.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(7,8,15,.82);backdrop-filter:blur(14px);z-index:500;align-items:center;justify-content:center;}
+[data-theme="light"] .confirm-overlay{background:rgba(80,70,130,.3)}
+.confirm-box{background:rgba(14,15,28,.97);border:1px solid rgba(123,104,238,.22);border-radius:24px;padding:2.5rem 2rem;width:90%;max-width:400px;text-align:center;box-shadow:0 40px 80px rgba(0,0,0,.7),0 0 60px rgba(123,104,238,.12);animation:cboxIn .3s cubic-bezier(.34,1.56,.64,1);}
+[data-theme="light"] .confirm-box{background:rgba(250,249,255,.99);border-color:rgba(79,70,229,.18);box-shadow:0 20px 60px rgba(0,0,0,.12),0 0 40px rgba(79,70,229,.08);}
+@keyframes cboxIn{from{opacity:0;transform:scale(.88) translateY(24px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.confirm-icon{width:64px;height:64px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:1.25rem;}
+.confirm-icon-warn{background:rgba(251,191,36,.15);border:2px solid rgba(251,191,36,.3);color:#fbbf24}
+.confirm-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);margin-bottom:.6rem;}
+.confirm-sub{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:1.5rem}
+.confirm-actions{display:flex;gap:10px;margin-top:1.5rem;justify-content:center}
+.confirm-btn-cancel{padding:11px 24px;border-radius:11px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s;}
+.confirm-btn-cancel:hover{background:rgba(255,255,255,.1);color:var(--text)}
+[data-theme="light"] .confirm-btn-cancel{border-color:rgba(0,0,0,.1);background:rgba(0,0,0,.04);color:var(--text2)}
+[data-theme="light"] .confirm-btn-cancel:hover{background:rgba(0,0,0,.08);color:var(--text)}
+.confirm-btn-ok{padding:11px 24px;border:none;border-radius:11px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:all .2s;}
+.confirm-btn-warn{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;box-shadow:0 4px 16px rgba(245,158,11,.35);}
+.confirm-btn-warn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(245,158,11,.45)}
+</style>
+</head>
+<body>
+<button class="theme-btn" id="theme-btn" onclick="toggleTheme()" aria-label="Toggle colour theme">🌙</button>
+<div class="page-wrap" style="display:grid;grid-template-columns:1fr 1fr;min-height:100vh;position:relative;z-index:1">
+
+<!-- ══ HERO SIDE ══════════════════════════════════════════════ -->
+<div class="hero-side" style="display:flex;flex-direction:column;justify-content:center;padding:4rem 3.5rem;background:linear-gradient(135deg,rgba(123,104,238,.08) 0%,rgba(34,211,238,.05) 100%);border-right:1px solid rgba(123,104,238,.1);position:relative;overflow:hidden">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 30%,rgba(123,104,238,.12) 0%,transparent 60%);pointer-events:none"></div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:2rem">
+    <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#7b68ee,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 4px 16px rgba(123,104,238,.4)">🤖</div>
+    <div style="font-family:Syne,sans-serif;font-size:1.1rem;font-weight:800;background:linear-gradient(130deg,#c4b5fd,#7b68ee,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">PrepEdge AI</div>
+  </div>
+  <div style="display:inline-flex;align-items:center;gap:6px;margin-bottom:1.25rem;padding:5px 14px;border-radius:20px;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.2);font-size:11px;font-weight:700;color:#34d399;font-family:Syne,sans-serif;letter-spacing:.06em;text-transform:uppercase;width:fit-content">
+    <div style="width:6px;height:6px;border-radius:50%;background:#34d399;box-shadow:0 0 6px #34d399;animation:blink 2s ease-in-out infinite"></div>
+    Free to join
+  </div>
+  <h1 style="font-family:Syne,sans-serif;font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;line-height:1.15;letter-spacing:-.03em;margin-bottom:1.1rem;background:linear-gradient(130deg,#fff 0%,#c4b5fd 45%,#60a5fa 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">Start Interview Prep<br>In Minutes</h1>
+  <p style="font-size:14px;color:var(--text2);line-height:1.75;margin-bottom:1.75rem;max-width:380px">
+    Join thousands of candidates who use PrepEdge AI to land their dream roles. Free to start — no credit card needed.
+  </p>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:2rem">
+    <div style="display:flex;align-items:flex-start;gap:10px">
+      <div style="width:30px;height:30px;border-radius:8px;background:rgba(123,104,238,.15);border:1px solid rgba(123,104,238,.2);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">✨</div>
+      <div><div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:1px">Role-specific AI questions</div><div style="font-size:12px;color:var(--text3)">Generated fresh for your exact job title and experience.</div></div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:10px">
+      <div style="width:30px;height:30px;border-radius:8px;background:rgba(34,211,153,.1);border:1px solid rgba(34,211,153,.15);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">🎤</div>
+      <div><div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:1px">Speak & get instant AI scores</div><div style="font-size:12px;color:var(--text3)">Live transcription + detailed coaching feedback.</div></div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:10px">
+      <div style="width:30px;height:30px;border-radius:8px;background:rgba(96,165,250,.1);border:1px solid rgba(96,165,250,.15);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0">📈</div>
+      <div><div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:1px">Track your growth</div><div style="font-size:12px;color:var(--text3)">Charts, history, and performance analytics per role.</div></div>
+    </div>
+  </div>
+  <div style="padding:14px 16px;background:rgba(123,104,238,.06);border:1px solid rgba(123,104,238,.12);border-radius:14px">
+    <div style="font-size:13px;color:var(--text2);line-height:1.65;font-style:italic;margin-bottom:8px">"I got 3 interview calls in one week after a month of daily practice on PrepEdge AI. The mock interview mode is incredibly realistic."</div>
+    <div style="font-size:11px;font-weight:700;color:var(--accent2);font-family:Syne,sans-serif">— Product Manager, MAANG offer ✓</div>
+  </div>
+</div>
+
+<!-- ══ FORM SIDE ══════════════════════════════════════════════ -->
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem">
+<div class="card" style="max-width:430px;width:100%;margin:0">
+  <div class="logo-area">
+    <div class="logo-icon">🤖</div>
+    <div class="logo-name">PrepEdge AI</div>
+  </div>
+  <div class="page-title">Create an account</div>
+  <div class="page-sub">Start your interview prep journey</div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="flash {{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <form method="POST" action="{{ url_for('register') }}" id="reg-form" novalidate>
+
+    <!-- STEP 1: Username & Email -->
+    <div id="step-1" class="reg-step active">
+      <div class="field">
+        <label>Username</label>
+        <input type="text" name="username" id="r-username" value="{{ username }}"
+               placeholder="e.g. Aditya123" required autocomplete="username"
+               oninput="checkUsername(this)"/>
+        <div class="hint">Letters, numbers, underscores only. Min 3 characters.</div>
+        <div class="field-err" id="err-username"></div>
+      </div>
+
+      <div class="field">
+        <label>Email</label>
+        <input type="email" name="email" id="r-email" value="{{ email }}"
+               placeholder="you@example.com" required autocomplete="email"
+               oninput="checkEmail(this)"/>
+        <div class="field-err" id="err-email"></div>
+        <div id="email-domain-warn" style="display:none;font-size:11px;color:var(--amber);margin-top:4px;padding:6px 10px;border-radius:8px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.18);">⚠️ This email uses an uncommon domain extension. You can still proceed, but a confirmation will be required.</div>
+      </div>
+
+      <button type="button" class="btn" id="btn-send-otp" onclick="sendOtp()" disabled>📨 Send OTP</button>
+    </div>
+
+    <!-- STEP 2: OTP Verification -->
+    <div id="step-2" class="reg-step" style="display:none">
+      <div style="font-size:13px;color:var(--green);margin-bottom:1rem;background:rgba(52,211,153,.1);padding:10px;border-radius:10px;border:1px solid rgba(52,211,153,.2)">
+        ✅ OTP sent to <strong id="display-email"></strong>
+      </div>
+      
+      <div class="field">
+        <label>Enter 6-Digit OTP</label>
+        <input type="text" id="r-otp" placeholder="123456" maxlength="6"
+               style="letter-spacing:8px;font-size:24px;text-align:center;font-weight:700;font-family:monospace"
+               oninput="checkOtp(this)" onkeypress="return /[0-9]/i.test(event.key)"/>
+        <div class="field-err" id="err-otp"></div>
+      </div>
+
+      <button type="button" class="btn" id="btn-verify-otp" onclick="verifyOtp()" disabled>🔐 Verify OTP</button>
+      
+      <div style="text-align:center;margin-top:1rem">
+        <button type="button" id="btn-resend-otp" onclick="sendOtp(true)" 
+                style="background:none;border:none;color:var(--accent2);font-size:13px;font-weight:600;cursor:pointer">
+          Resend OTP
+        </button>
+        <div id="resend-timer" style="font-size:12px;color:var(--text3);display:none;margin-top:4px">Wait <span id="resend-sec">60</span>s to resend</div>
+      </div>
+    </div>
+
+    <!-- STEP 3: Password -->
+    <div id="step-3" class="reg-step" style="display:none">
+      <div style="font-size:13px;color:var(--green);margin-bottom:1rem;background:rgba(52,211,153,.1);padding:10px;border-radius:10px;border:1px solid rgba(52,211,153,.2)">
+        ✅ Email verified successfully!
+      </div>
+      
+      <div class="field">
+        <label>Password</label>
+        <div class="pw-field-wrap">
+          <input type="password" name="password" id="r-pw"
+                 placeholder="Min 8 chars, upper, lower, digit, special"
+                 required autocomplete="new-password"
+                 oninput="checkPW(this)" onfocus="document.getElementById('req-list').classList.add('show')"/>
+        </div>
+        <div class="pw-bar-wrap"><div class="pw-bar" id="pw-bar"></div></div>
+        <div class="pw-hint" id="pw-hint"></div>
+        <div class="req-list" id="req-list">
+          <div class="req" id="req-len"><span class="req-dot"></span>At least 8 characters</div>
+          <div class="req" id="req-upper"><span class="req-dot"></span>One uppercase letter</div>
+          <div class="req" id="req-lower"><span class="req-dot"></span>One lowercase letter</div>
+          <div class="req" id="req-digit"><span class="req-dot"></span>One digit</div>
+          <div class="req" id="req-special"><span class="req-dot"></span>One special character</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Confirm Password</label>
+        <div class="pw-field-wrap">
+          <input type="password" name="confirm" id="r-pw2"
+                 placeholder="Repeat your password"
+                 required autocomplete="new-password"
+                 oninput="checkConfirm(this)"/>
+        </div>
+        <!-- Real-time matching feedback -->
+        <div id="match-feedback" style="font-size:12px;font-weight:600;margin-top:6px;display:none;padding:6px 10px;border-radius:6px"></div>
+        <div class="field-err" id="err-confirm"></div>
+      </div>
+
+      <button type="submit" class="btn" id="btn-register" disabled>🚀 Create Account</button>
+    </div>
+
+  </form>
+
+  <div class="alt-link">Already have an account? <a href="{{ url_for('login') }}">Sign in</a></div>
+</div>
+
+<!-- Email Warning Modal -->
+<div id="email-warning-modal" class="confirm-overlay" style="display:none">
+  <div class="confirm-box">
+    <div class="confirm-icon confirm-icon-warn">⚠️</div>
+    <h2 class="confirm-title">Email format warning</h2>
+    <p class="confirm-sub" id="email-warning-text"></p>
+    <div class="confirm-actions">
+      <button class="confirm-btn-cancel" onclick="cancelEmailWarning()">Cancel</button>
+      <button class="confirm-btn-ok confirm-btn-warn" onclick="continueEmailWarning()">Continue Anyway</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* Theme — unified key: prepedge-theme */
+(function(){
+  const t=localStorage.getItem('prepedge-theme')||'dark';
+  document.documentElement.setAttribute('data-theme',t);
+  const btn=document.getElementById('theme-btn');
+  if(btn) btn.textContent=t==='light'?'☀️':'🌙';
+})();
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme')||'dark';
+  const next=cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('prepedge-theme',next);
+  const btn=document.getElementById('theme-btn');
+  if(btn) btn.textContent=next==='light'?'☀️':'🌙';
+}
+
+/* Password eye/slash SVG icons */
+const EYE_OPEN=`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+const EYE_SHUT=`<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+function attachPwToggle(inputId){
+  const input=document.getElementById(inputId);
+  if(!input) return;
+  const btn=document.createElement('button');
+  btn.type='button';btn.className='pw-eye-btn';
+  btn.setAttribute('aria-label','Show password');btn.setAttribute('aria-pressed','false');
+  btn.innerHTML=EYE_OPEN;
+  input.parentNode.appendChild(btn);
+  btn.addEventListener('click',function(){
+    const show=input.type==='password';
+    input.type=show?'text':'password';
+    btn.innerHTML=show?EYE_SHUT:EYE_OPEN;
+    btn.setAttribute('aria-pressed',show?'true':'false');
+    btn.setAttribute('aria-label',show?'Hide password':'Show password');
+  });
+}
+attachPwToggle('r-pw');
+attachPwToggle('r-pw2');
+
+/* Form Validation State */
+let isUsernameValid = false;
+let isEmailValid = false;
+let isOtpValid = false;
+let isPwValid = false;
+let isConfirmValid = false;
+
+function updateStep1Btn() {
+  document.getElementById('btn-send-otp').disabled = !(isUsernameValid && isEmailValid);
+}
+function updateStep2Btn() {
+  document.getElementById('btn-verify-otp').disabled = !isOtpValid;
+}
+function updateStep3Btn() {
+  document.getElementById('btn-register').disabled = !(isPwValid && isConfirmValid);
+}
+
+function showFieldErr(el,msg){
+  if(!el) return;
+  el.textContent=msg;
+  el.style.display=msg?'block':'none';
+}
+
+function checkUsername(el){
+  const v=el.value.trim();
+  const err=document.getElementById('err-username');
+  let msg='';
+  isUsernameValid = false;
+  if(v.length===0){ showFieldErr(err,''); el.classList.remove('valid','invalid'); updateStep1Btn(); return; }
+  if(v.length<3)                              msg='At least 3 characters required.';
+  else if(v.length>20)                        msg='Max 20 characters.';
+  else if(!/^[A-Za-z]/.test(v))              msg='Must start with a letter.';
+  else if(!/^[A-Za-z][A-Za-z0-9_]*$/.test(v)) msg='Letters, numbers, underscores only.';
+  else {
+    const alphaCount=(v.match(/[A-Za-z]/g)||[]).length;
+    if(alphaCount<3) msg='Must contain at least 3 letters.';
+    else isUsernameValid = true;
+  }
+  showFieldErr(err,msg);
+  el.classList.toggle('valid',!msg&&v.length>0);
+  el.classList.toggle('invalid',!!msg);
+  updateStep1Btn();
+}
+
+function checkEmail(el){
+  const v=el.value.trim();
+  const err=document.getElementById('err-email');
+  const domainWarn=document.getElementById('email-domain-warn');
+  isEmailValid = false;
+  if(domainWarn) domainWarn.style.display='none';
+  if(!v){ showFieldErr(err,''); el.classList.remove('valid','invalid'); updateStep1Btn(); return; }
+  
+  let ok = true;
+  let msg = '';
+  
+  if (v.includes(' ')) { ok = false; msg = 'Email must not contain spaces.'; }
+  else if (v.split('@').length !== 2) { ok = false; msg = 'Email must contain exactly one @ symbol.'; }
+  else {
+    const parts = v.split('@');
+    const local = parts[0];
+    const domain = parts[1];
+    if (!local) { ok = false; msg = 'Local part before @ must not be empty.'; }
+    else if (!domain) { ok = false; msg = 'Domain part after @ must not be empty.'; }
+    else if (local.startsWith('.') || local.endsWith('.')) { ok = false; msg = 'Email cannot start or end with a dot before @.'; }
+    else if (/\.{2,}/.test(local)) { ok = false; msg = 'Email cannot have consecutive dots before @.'; }
+    else if (!/^[a-zA-Z0-9._%+\-]+$/.test(local)) { ok = false; msg = 'Email contains invalid characters before @.'; }
+    else if (!/^[a-zA-Z0-9.\-]+$/.test(domain)) { ok = false; msg = 'Domain contains invalid characters.'; }
+    else if (!domain.includes('.')) { ok = false; msg = 'Domain must include a dot (e.g., gmail.com).'; }
+    else {
+      const tld = domain.substring(domain.lastIndexOf('.'));
+      if (tld.length < 3) { ok = false; msg = 'Domain extension is too short (min 2 letters).'; }
+      else if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(v)) { ok = false; msg = 'Please enter a valid email address.'; }
+    }
+  }
+
+  if(ok) {
+    isEmailValid = true;
+    // Show domain warning if not in trusted list
+    const emailLower = v.toLowerCase();
+    const hasTrustedDomain = ALLOWED_EMAIL_DOMAINS.some(ext => emailLower.endsWith(ext));
+    if(!hasTrustedDomain && domainWarn) {
+      domainWarn.style.display='block';
+    }
+  }
+  showFieldErr(err,msg);
+  el.classList.toggle('valid',ok&&v.length>0);
+  el.classList.toggle('invalid',!!msg);
+  updateStep1Btn();
+}
+
+function checkOtp(el) {
+  const v = el.value.trim();
+  isOtpValid = /^\d{6}$/.test(v);
+  el.classList.toggle('valid', isOtpValid);
+  updateStep2Btn();
+}
+
+function checkPW(el){
+  const v=el.value;
+  const checks={
+    'req-len':  v.length>=8,
+    'req-upper':/[A-Z]/.test(v),
+    'req-lower':/[a-z]/.test(v),
+    'req-digit':/[0-9]/.test(v),
+    'req-special':/[^A-Za-z0-9]/.test(v),
+  };
+  let score=Object.values(checks).filter(Boolean).length;
+  Object.entries(checks).forEach(([id,met])=>{
+    document.getElementById(id)?.classList.toggle('met',met);
+  });
+  
+  isPwValid = (score === 5);
+  el.classList.toggle('valid', isPwValid);
+
+  const map=[
+    {pct:'20%',bg:'#ef4444',label:'Very weak'},
+    {pct:'40%',bg:'#f97316',label:'Weak'},
+    {pct:'60%',bg:'#eab308',label:'Fair'},
+    {pct:'80%',bg:'#22c55e',label:'Strong'},
+    {pct:'100%',bg:'#16a34a',label:'Very strong'},
+  ];
+  const s=map[score-1]||{pct:'0',bg:'transparent',label:''};
+  const bar=document.getElementById('pw-bar');
+  const hint=document.getElementById('pw-hint');
+  bar.style.width=s.pct; bar.style.background=s.bg;
+  hint.textContent=s.label; hint.style.color=s.bg;
+  
+  checkConfirm(document.getElementById('r-pw2'));
+}
+
+function checkConfirm(el){
+  const pw=document.getElementById('r-pw')?.value||'';
+  const v=el.value;
+  isConfirmValid = false;
+  
+  const feedback = document.getElementById('match-feedback');
+  
+  if(!v) {
+    feedback.style.display = 'none';
+    el.classList.remove('valid','invalid');
+    updateStep3Btn();
+    return;
+  }
+  
+  feedback.style.display = 'block';
+  if(v === pw) {
+    isConfirmValid = true;
+    feedback.textContent = '✅ Passwords match';
+    feedback.style.color = 'var(--green)';
+    feedback.style.background = 'rgba(52,211,153,.1)';
+    feedback.style.border = '1px solid rgba(52,211,153,.2)';
+    el.classList.add('valid');
+    el.classList.remove('invalid');
+  } else {
+    feedback.textContent = '❌ Passwords do not match';
+    feedback.style.color = 'var(--red)';
+    feedback.style.background = 'rgba(248,113,113,.1)';
+    feedback.style.border = '1px solid rgba(248,113,113,.2)';
+    el.classList.add('invalid');
+    el.classList.remove('valid');
+  }
+  updateStep3Btn();
+}
+
+/* Email Domain Validation & Warning */
+let currentOtpContext = null;
+const ALLOWED_EMAIL_DOMAINS = [
+  '.com', '.in', '.co', '.net', '.org', '.edu', '.gov', '.io', 
+  '.ai', '.dev', '.tech', '.me', '.info', '.biz', '.co.in'
+];
+
+function cancelEmailWarning() {
+  document.getElementById('email-warning-modal').style.display = 'none';
+  currentOtpContext = null;
+  const btn = document.getElementById('btn-send-otp');
+  btn.textContent = '📨 Send OTP';
+  btn.disabled = false;
+}
+
+function continueEmailWarning() {
+  document.getElementById('email-warning-modal').style.display = 'none';
+  if (currentOtpContext) {
+    currentOtpContext.confirmed = true;
+    _executeSendOtp(currentOtpContext.isResend, true);
+  }
+}
+
+/* AJAX Flow Logic */
+let resendTimer = null;
+function startResendCooldown() {
+  const btn = document.getElementById('btn-resend-otp');
+  const timerDiv = document.getElementById('resend-timer');
+  const secSpan = document.getElementById('resend-sec');
+  
+  btn.style.display = 'none';
+  timerDiv.style.display = 'block';
+  
+  let left = 60;
+  secSpan.textContent = left;
+  
+  if(resendTimer) clearInterval(resendTimer);
+  resendTimer = setInterval(() => {
+    left--;
+    secSpan.textContent = left;
+    if(left <= 0) {
+      clearInterval(resendTimer);
+      btn.style.display = 'inline-block';
+      timerDiv.style.display = 'none';
+    }
+  }, 1000);
+}
+
+async function sendOtp(isResend = false) {
+  const email = document.getElementById('r-email').value.trim().toLowerCase();
+  
+  const hasAllowedEnding = ALLOWED_EMAIL_DOMAINS.some(ending => email.endsWith(ending));
+  
+  if (!hasAllowedEnding && !isResend) {
+    if (!currentOtpContext || currentOtpContext.email !== email || !currentOtpContext.confirmed) {
+      document.getElementById('email-warning-text').textContent = `This email does not end with one of the supported domains (.com, .in, .co, etc.). Are you sure you want to proceed?`;
+      document.getElementById('email-warning-modal').style.display = 'flex';
+      
+      currentOtpContext = { email, isResend };
+      
+      const btn = document.getElementById('btn-send-otp');
+      btn.textContent = 'Sending...';
+      btn.disabled = true;
+      return;
+    }
+  }
+  
+  _executeSendOtp(isResend, currentOtpContext && currentOtpContext.email === email && currentOtpContext.confirmed);
+}
+
+async function _executeSendOtp(isResend, allowUnrecommended) {
+  const btn = isResend ? document.getElementById('btn-resend-otp') : document.getElementById('btn-send-otp');
+  const origText = btn.textContent;
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+  
+  const username = document.getElementById('r-username').value.trim();
+  const email = document.getElementById('r-email').value.trim();
+  const errDiv = document.getElementById('err-email');
+  
+  try {
+    const res = await fetch('/send-register-otp', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ username, email, allow_unrecommended_email: allowUnrecommended })
+    });
+    const data = await res.json();
+    
+    if(!res.ok) {
+      showFieldErr(errDiv, data.error || 'Failed to send OTP.');
+      btn.textContent = origText;
+      if(!isResend) updateStep1Btn();
+      return;
+    }
+    
+    // Success!
+    showFieldErr(errDiv, '');
+    document.getElementById('display-email').textContent = email;
+    document.getElementById('step-1').style.display = 'none';
+    document.getElementById('step-2').style.display = 'block';
+    
+    startResendCooldown();
+    
+  } catch(e) {
+    showFieldErr(errDiv, 'Network error. Please try again.');
+    btn.textContent = origText;
+    if(!isResend) updateStep1Btn();
+  }
+}
+
+async function verifyOtp() {
+  const btn = document.getElementById('btn-verify-otp');
+  btn.textContent = 'Verifying...';
+  btn.disabled = true;
+  
+  const email = document.getElementById('r-email').value.trim();
+  const otp = document.getElementById('r-otp').value.trim();
+  const errDiv = document.getElementById('err-otp');
+  
+  try {
+    const res = await fetch('/verify-register-otp', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ email, otp })
+    });
+    const data = await res.json();
+    
+    if(!res.ok) {
+      showFieldErr(errDiv, data.error || 'Invalid OTP.');
+      btn.textContent = '🔐 Verify OTP';
+      updateStep2Btn();
+      return;
+    }
+    
+    // Success!
+    showFieldErr(errDiv, '');
+    document.getElementById('step-2').style.display = 'none';
+    document.getElementById('step-3').style.display = 'block';
+    
+  } catch(e) {
+    showFieldErr(errDiv, 'Network error. Please try again.');
+    btn.textContent = '🔐 Verify OTP';
+    updateStep2Btn();
+  }
+}
+
+// Initial checks for pre-filled data
+document.addEventListener('DOMContentLoaded', () => {
+  const un = document.getElementById('r-username');
+  const em = document.getElementById('r-email');
+  if(un.value) checkUsername(un);
+  if(em.value) checkEmail(em);
+});</script>
+</div><!-- /form-side -->
+</div><!-- /page-wrap -->
+</body>
+</html>

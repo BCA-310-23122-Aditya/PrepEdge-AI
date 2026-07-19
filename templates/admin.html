@@ -1,0 +1,1588 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Dashboard — PrepEdge AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07080f;--surface:rgba(255,255,255,.04);--border:rgba(255,255,255,.08);
+  --text:#e8eaf6;--text2:#9ba3c2;--text3:#555e82;
+  --accent:#7b68ee;--accent2:#a78bfa;--cyan:#22d3ee;--green:#34d399;--red:#f87171;--amber:#fbbf24;
+  --input-border:rgba(255,255,255,.09);
+}
+[data-theme="light"]{
+  --bg:#f5f4f0;--surface:rgba(255,255,255,.9);--border:rgba(79,70,229,.15);
+  --text:#1a1523;--text2:#4b4569;--text3:#8b85a0;
+  --accent:#4f46e5;--accent2:#6d28d9;--cyan:#0891b2;--green:#059669;--red:#dc2626;--amber:#d97706;
+  --input-border:rgba(0,0,0,.12);
+}
+[data-theme="light"] body{background:var(--bg)}
+[data-theme="light"] body::before{background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(99,102,241,.1) 0%,transparent 60%),linear-gradient(160deg,#f5f4f0 0%,#edecea 40%,#f5f4f0 100%);animation:none}
+[data-theme="light"] header{background:rgba(245,244,240,.88)!important;border-bottom-color:rgba(79,70,229,.1)!important}
+[data-theme="light"] .kpi{background:rgba(255,255,255,.9)}
+[data-theme="light"] .users-card{background:rgba(255,255,255,.9)}
+[data-theme="light"] .modal-box{background:rgba(250,249,255,.98)}
+[data-theme="light"] .search-input{background:rgba(255,255,255,.85);color:var(--text)}
+[data-theme="light"] .modal-field input{background:rgba(255,255,255,.85);border-color:rgba(0,0,0,.12);color:var(--text)}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(123,104,238,.15) 0%,transparent 60%),
+             radial-gradient(ellipse 60% 50% at 80% 20%,rgba(34,211,238,.08) 0%,transparent 55%),
+             linear-gradient(160deg,#07080f 0%,#0a0c1a 40%,#070910 100%);}
+
+/* Modern password toggle */
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.password-wrapper input {
+  flex: 1;
+  padding-right: 42px;
+}
+.toggle-password {
+  position: absolute;
+  right: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  color: var(--text2);
+}
+.toggle-password svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  fill: none;
+  transition: stroke 0.2s;
+}
+.toggle-password:hover {
+  background: rgba(123,104,238,.12);
+  color: var(--accent2);
+}
+.toggle-password:active {
+  transform: scale(0.95);
+}
+[data-theme="light"] .toggle-password:hover {
+  background: rgba(79,70,229,.1);
+}
+
+/* ── Header ── */
+header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(7,8,15,.75);backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(123,104,238,.15);
+  padding:0 2rem;height:64px;
+  display:flex;align-items:center;justify-content:space-between;
+  box-shadow:0 1px 0 rgba(123,104,238,.1);
+}
+.logo-wrap{display:flex;align-items:center;gap:10px}
+.logo-icon{width:36px;height:36px;background:linear-gradient(135deg,#7b68ee,#a78bfa);border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;box-shadow:0 4px 16px rgba(123,104,238,.4)}
+.logo{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;background:linear-gradient(130deg,#c4b5fd,#7b68ee,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.header-right{display:flex;align-items:center;gap:10px}
+.admin-badge{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--cyan);font-weight:700;font-family:'Syne',sans-serif;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.2);padding:4px 10px;border-radius:7px}
+/* Profile Avatar styles for Admin */
+.pm-avatar-wrap {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+.pm-avatar-big {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7b68ee, #a78bfa);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(123, 104, 238, 0.4);
+}
+.pm-avatar-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.pm-avatar-container:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.4), 0 12px 32px rgba(123, 104, 238, 0.35);
+}
+.avatar-hover-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.pm-avatar-container:hover .avatar-hover-overlay {
+  opacity: 1;
+}
+.pm-avatar-img {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 8px 24px rgba(123, 104, 238, 0.4);
+}
+.pm-avatar-hint {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 6px;
+  font-family: 'DM Sans', sans-serif;
+}
+.user-avatar-img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.btn-sm{padding:7px 14px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;text-decoration:none;font-family:inherit;transition:all .2s}
+.btn-sm:hover{background:rgba(255,255,255,.08);color:var(--text)}
+.btn-sm.logout-btn:hover{background:rgba(248,113,113,.12);color:#fca5a5;border-color:rgba(248,113,113,.25)}
+.btn-sm.profile-btn{border-color:rgba(167,139,250,.25);color:var(--accent2);background:rgba(123,104,238,.08)}
+.btn-sm.profile-btn:hover{background:rgba(123,104,238,.2)}
+
+/* ── Page ── */
+.page{max-width:1280px;margin:0 auto;padding:2rem 1.5rem;position:relative;z-index:1}
+.page-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.75rem;flex-wrap:wrap;gap:10px}
+.page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-.03em;
+  background:linear-gradient(130deg,#fff,#c4b5fd,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.page-sub{font-size:13px;color:var(--text3);margin-top:4px}
+
+/* ── KPI cards ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:2rem}
+.kpi{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1.25rem 1.5rem;backdrop-filter:blur(12px);transition:all .2s;position:relative;overflow:hidden}
+.kpi::after{content:'';position:absolute;inset:0;border-radius:18px;background:linear-gradient(135deg,transparent 60%,rgba(123,104,238,.04));pointer-events:none}
+.kpi:hover{border-color:rgba(123,104,238,.25);transform:translateY(-2px)}
+.kpi-val{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;line-height:1}
+.kpi-lbl{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-top:6px;font-family:'Syne',sans-serif}
+.kpi-v-users{color:var(--accent2);text-shadow:0 0 20px rgba(167,139,250,.4)}
+.kpi-v-sess{color:var(--cyan);text-shadow:0 0 20px rgba(34,211,238,.3)}
+.kpi-v-ans{color:var(--green);text-shadow:0 0 20px rgba(52,211,153,.3)}
+
+/* ── Users card ── */
+.users-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;backdrop-filter:blur(12px);overflow:hidden}
+.users-card-header{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
+.users-card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:8px}
+.user-count-badge{font-size:11px;background:rgba(123,104,238,.2);border:1px solid rgba(123,104,238,.25);color:var(--accent2);padding:2px 9px;border-radius:5px;font-weight:700}
+.controls-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.search-input{padding:7px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;font-size:13px;color:var(--text);font-family:'DM Sans',inherit;outline:none;width:200px;transition:all .2s}
+.search-input:focus{border-color:rgba(123,104,238,.4);background:rgba(123,104,238,.06)}
+.search-input::placeholder{color:var(--text3)}
+.sort-btn{padding:7px 12px;border-radius:8px;border:1px solid rgba(255,255,255,.09);background:rgba(255,255,255,.04);font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'Syne',inherit;transition:all .2s;letter-spacing:.03em}
+.sort-btn:hover{background:rgba(255,255,255,.08);color:var(--text)}
+.sort-btn.active{border-color:rgba(123,104,238,.3);color:var(--accent2);background:rgba(123,104,238,.1)}
+
+/* ── Table ── */
+.table-wrap{overflow-x:auto;padding:0}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:800px}
+thead tr{border-bottom:1px solid rgba(255,255,255,.07)}
+th{text-align:left;padding:13px 14px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;white-space:nowrap;cursor:pointer;user-select:none;transition:color .15s}
+th:hover{color:var(--accent2)}
+th span{display:inline-flex;align-items:center;gap:4px}
+td{padding:13px 14px;border-bottom:1px solid rgba(255,255,255,.04);white-space:nowrap;vertical-align:middle}
+tbody tr:hover td{background:rgba(123,104,238,.04)}
+tbody tr:last-child td{border-bottom:none}
+.user-id{font-size:11px;color:var(--text3);font-weight:600;font-family:'Syne',sans-serif}
+.user-name{font-weight:600;color:var(--text);display:flex;align-items:center;gap:7px}
+.u-avatar{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,rgba(123,104,238,.4),rgba(167,139,250,.25));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:var(--accent2);flex-shrink:0}
+.user-email{font-size:12px;color:var(--text2)}
+.ts{font-size:12px;color:var(--text3)}
+.no-ts{font-size:11px;color:rgba(255,255,255,.15)}
+.role-tag{font-size:10px;font-weight:700;padding:3px 8px;border-radius:5px;background:rgba(123,104,238,.15);color:var(--accent2);font-family:'Syne',sans-serif;letter-spacing:.05em;text-transform:uppercase}
+.sessions-count{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--accent2);text-align:center}
+.actions-cell{display:flex;gap:6px;align-items:center}
+.btn-delete{padding:6px 12px;border-radius:7px;border:1px solid rgba(248,113,113,.2);background:rgba(248,113,113,.08);color:var(--red);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-delete:hover{background:rgba(248,113,113,.2);border-color:rgba(248,113,113,.35)}
+.btn-reset-pw{padding:6px 12px;border-radius:7px;border:1px solid rgba(251,191,36,.2);background:rgba(251,191,36,.06);color:var(--amber);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+.btn-reset-pw:hover{background:rgba(251,191,36,.14)}
+
+/* ── Empty ── */
+.empty-state{text-align:center;padding:4rem;color:var(--text3)}
+.empty-state div{font-size:40px;margin-bottom:.75rem}
+
+/* ── Modals ── */
+.modal{display:none;position:fixed;inset:0;background:rgba(7,8,15,.82);backdrop-filter:blur(16px);z-index:300;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.modal-box{background:rgba(12,13,26,.97);border:1px solid rgba(123,104,238,.2);border-radius:22px;padding:2rem;width:90%;max-width:480px;box-shadow:0 40px 80px rgba(0,0,0,.6),0 0 60px rgba(123,104,238,.1);animation:modalIn .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes modalIn{from{opacity:0;transform:scale(.9) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem}
+.modal-title-text{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:8px}
+.modal-close{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);width:30px;height:30px;border-radius:8px;font-size:16px;color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{background:rgba(248,113,113,.15);color:var(--red)}
+.modal-field{margin-bottom:.9rem}
+.modal-field label{display:block;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;font-family:'Syne',sans-serif}
+.modal-field input{width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:11px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:all .2s}
+.modal-field input:focus{border-color:rgba(123,104,238,.5);background:rgba(123,104,238,.07);box-shadow:0 0 0 3px rgba(123,104,238,.1)}
+.modal-status{font-size:13px;min-height:16px;padding:8px 12px;border-radius:8px;margin-bottom:.6rem;display:none}
+.modal-status.err{display:block;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);color:var(--red)}
+.modal-status.ok{display:block;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);color:var(--green)}
+.btn-modal{width:100%;padding:12px;border:none;border-radius:11px;background:linear-gradient(135deg,#7b68ee,#a78bfa);color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 20px rgba(123,104,238,.4);transition:all .2s}
+.btn-modal:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(123,104,238,.5)}
+.pw-bar-wrap{height:4px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden;margin-top:6px}
+.pw-bar{height:4px;border-radius:4px;width:0;transition:width .3s,background .3s}
+.pw-hint{font-size:11px;color:var(--text3);margin-top:4px}
+
+/* ── Admin Profile Modal ── */
+.pm-tabs{display:flex;gap:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:4px;margin-bottom:1.25rem}
+.pm-tab{flex:1;padding:8px 12px;border:none;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;background:transparent;color:var(--text3);font-family:'DM Sans',inherit;transition:all .2s}
+.pm-tab.active{background:linear-gradient(135deg,rgba(123,104,238,.35),rgba(167,139,250,.2));color:var(--accent2);box-shadow:0 2px 10px rgba(123,104,238,.2)}
+
+/* ── Toast ── */
+#toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(20,22,40,.95);border:1px solid rgba(123,104,238,.2);color:var(--text);padding:12px 24px;border-radius:50px;font-size:13px;font-weight:500;transition:transform .35s cubic-bezier(.34,1.56,.64,1);z-index:999;pointer-events:none;white-space:nowrap;box-shadow:0 8px 30px rgba(0,0,0,.5);backdrop-filter:blur(16px)}
+#toast.show{transform:translateX(-50%) translateY(0)}
+
+/* ── Clickable username link ── */
+.u-name-link{background:none;border:none;padding:0;font:inherit;font-weight:600;color:var(--text);cursor:pointer;text-align:left;transition:color .2s;text-decoration:none}
+.u-name-link:hover{color:var(--accent2);text-decoration:underline;text-decoration-style:dotted}
+
+/* ══ USER DETAIL DRAWER ════════════════════════════════════════════════════ */
+.drawer-overlay{
+  position:fixed;inset:0;
+  background:rgba(7,8,15,.75);backdrop-filter:blur(8px);
+  z-index:200;opacity:0;pointer-events:none;
+  transition:opacity .3s ease;
+}
+.drawer-overlay.open{opacity:1;pointer-events:all}
+
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;
+  width:min(580px,100vw);
+  background:rgba(12,13,26,.97);
+  border-left:1px solid rgba(123,104,238,.2);
+  z-index:201;overflow-y:auto;
+  transform:translateX(100%);
+  transition:transform .35s cubic-bezier(.4,0,.2,1);
+  display:flex;flex-direction:column;
+}
+.drawer.open{transform:translateX(0)}
+
+/* Drawer header */
+.drawer-header{
+  position:sticky;top:0;z-index:10;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.25rem 1.5rem;
+  background:rgba(12,13,26,.97);
+  border-bottom:1px solid rgba(255,255,255,.07);
+  gap:10px;
+}
+.drawer-title{
+  font-family:'Syne',sans-serif;font-size:15px;font-weight:800;
+  color:var(--text);display:flex;align-items:center;gap:10px;
+}
+.drawer-title-icon{
+  width:30px;height:30px;
+  background:rgba(123,104,238,.2);border:1px solid rgba(123,104,238,.25);
+  border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;
+}
+.drawer-close{
+  width:32px;height:32px;border-radius:9px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
+  font-size:18px;color:var(--text2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .2s;font-family:inherit;line-height:1;flex-shrink:0;
+}
+.drawer-close:hover{background:rgba(248,113,113,.15);color:var(--red);border-color:rgba(248,113,113,.3)}
+
+/* Drawer body */
+.drawer-body{padding:1.5rem;flex:1}
+
+/* Avatar row */
+.d-avatar-row{
+  display:flex;align-items:center;gap:14px;
+  margin-bottom:1.5rem;padding:1rem;
+  background:rgba(123,104,238,.06);border:1px solid rgba(123,104,238,.12);border-radius:14px;
+}
+.d-avatar-big{
+  width:54px;height:54px;border-radius:14px;
+  background:linear-gradient(135deg,#7b68ee,#a78bfa);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff;
+  flex-shrink:0;box-shadow:0 4px 16px rgba(123,104,238,.4);
+}
+.d-username-big{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--text)}
+.d-email-big{font-size:12px;color:var(--text3);margin-top:3px}
+
+/* Section */
+.d-section{margin-bottom:1.75rem}
+.d-section-title{
+  font-family:'Syne',sans-serif;font-size:11px;font-weight:800;
+  color:var(--text3);text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:.85rem;padding-bottom:.5rem;
+  border-bottom:1px solid rgba(255,255,255,.07);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.d-section-badge{
+  font-size:11px;color:var(--accent2);font-weight:700;
+  text-transform:none;letter-spacing:0;
+  background:rgba(123,104,238,.15);border:1px solid rgba(123,104,238,.2);
+  padding:2px 8px;border-radius:5px;
+}
+
+/* Info rows */
+.d-row{
+  display:flex;align-items:baseline;gap:.6rem;
+  padding:.45rem 0;border-bottom:1px solid rgba(255,255,255,.03);
+}
+.d-row:last-child{border-bottom:none}
+.d-label{
+  font-size:11px;font-weight:700;color:var(--text3);
+  text-transform:uppercase;letter-spacing:.06em;
+  min-width:110px;flex-shrink:0;font-family:'Syne',sans-serif;
+}
+.d-val{font-size:13px;color:var(--text);font-weight:500;word-break:break-word}
+
+/* Session chips */
+.d-list{display:flex;flex-direction:column;gap:6px}
+.session-chip{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:.55rem .8rem;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  border-radius:9px;
+}
+.session-chip-title{font-weight:600;color:var(--text);font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.session-chip-exp{font-size:11px;color:var(--text3);margin-top:2px}
+.session-chip-meta{font-size:11px;color:var(--text3);flex-shrink:0;text-align:right;white-space:nowrap}
+
+/* Role chips */
+.role-chip{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:.5rem .8rem;
+  background:rgba(123,104,238,.07);border:1px solid rgba(123,104,238,.15);
+  border-radius:9px;
+}
+.role-chip-title{font-weight:700;color:var(--accent2);font-size:12px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.role-chip-right{text-align:right;flex-shrink:0}
+.role-chip-count{font-size:11px;color:var(--text3);font-weight:600}
+.role-chip-date{font-size:10px;color:var(--text3);margin-top:1px}
+
+/* Loading / empty / error states */
+.d-loading{text-align:center;padding:3.5rem;color:var(--text3)}
+.d-spin{
+  display:inline-block;width:28px;height:28px;
+  border:3px solid rgba(255,255,255,.08);border-top-color:var(--accent2);
+  border-radius:50%;animation:dspin .7s linear infinite;margin-bottom:.75rem;
+}
+@keyframes dspin{to{transform:rotate(360deg)}}
+.d-empty{font-size:13px;color:var(--text3);text-align:center;padding:1.25rem;font-style:italic}
+.d-error{text-align:center;padding:2rem;color:var(--red);font-size:13px}
+
+/* Light theme overrides for drawer */
+[data-theme="light"] .drawer{
+  background:rgba(250,249,255,.99);
+  border-left-color:rgba(79,70,229,.14);
+  box-shadow:-20px 0 60px rgba(0,0,0,.1);
+}
+[data-theme="light"] .drawer-header{
+  background:rgba(250,249,255,.99);
+  border-bottom-color:rgba(79,70,229,.1);
+}
+[data-theme="light"] .drawer-overlay{background:rgba(100,90,150,.32)}
+[data-theme="light"] .drawer-close{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.1)}
+[data-theme="light"] .drawer-close:hover{background:rgba(220,38,38,.08);border-color:rgba(220,38,38,.2)}
+[data-theme="light"] .d-avatar-row{background:rgba(79,70,229,.05);border-color:rgba(79,70,229,.12)}
+[data-theme="light"] .d-section-title{border-bottom-color:rgba(79,70,229,.1)}
+[data-theme="light"] .d-row{border-bottom-color:rgba(0,0,0,.05)}
+[data-theme="light"] .d-val{color:var(--text)}
+[data-theme="light"] .session-chip{background:rgba(255,255,255,.85);border-color:rgba(79,70,229,.1);box-shadow:0 1px 4px rgba(0,0,0,.05)}
+[data-theme="light"] .role-chip{background:rgba(79,70,229,.06);border-color:rgba(79,70,229,.15)}
+[data-theme="light"] .d-spin{border-color:rgba(0,0,0,.08);border-top-color:var(--accent2)}
+[data-theme="light"] .u-name-link{color:var(--text)}
+[data-theme="light"] #toast{background:rgba(255,255,255,.96);border-color:rgba(79,70,229,.15);box-shadow:0 8px 30px rgba(0,0,0,.1)}
+
+/* Light theme — page title */
+[data-theme="light"] .page-title{background:linear-gradient(130deg,#1a1523,#4f46e5,#2563eb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+[data-theme="light"] .logo{background:linear-gradient(130deg,#1a1523,#4f46e5,#2563eb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+[data-theme="light"] .btn-sm{border-color:rgba(0,0,0,.1);background:rgba(255,255,255,.6)}
+[data-theme="light"] .btn-sm:hover{background:rgba(255,255,255,.95);color:var(--text)}
+[data-theme="light"] .sort-btn{border-color:rgba(0,0,0,.1);background:rgba(255,255,255,.5);color:var(--text2)}
+[data-theme="light"] .sort-btn:hover{background:rgba(255,255,255,.9)}
+[data-theme="light"] .sort-btn.active{border-color:rgba(79,70,229,.25);color:var(--accent2);background:rgba(79,70,229,.08)}
+[data-theme="light"] .kpi:hover{border-color:rgba(79,70,229,.22)}
+[data-theme="light"] .users-card-header{border-bottom-color:rgba(79,70,229,.1)}
+[data-theme="light"] thead tr{border-bottom-color:rgba(79,70,229,.1)}
+[data-theme="light"] td{border-bottom-color:rgba(0,0,0,.05)}
+[data-theme="light"] tbody tr:hover td{background:rgba(79,70,229,.04)}
+[data-theme="light"] .ts{color:var(--text2)}
+[data-theme="light"] .no-ts{color:rgba(0,0,0,.2)}
+[data-theme="light"] .modal-close{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.1)}
+[data-theme="light"] .pm-tabs{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.08)}
+.status-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  display: inline-block;
+}
+.status-badge.active {
+  background: rgba(52,211,153,.15);
+  color: #34d399;
+  border: 1px solid rgba(52,211,153,.2);
+}
+.status-badge.blocked {
+  background: rgba(248,113,113,.15);
+  color: #f87171;
+  border: 1px solid rgba(248,113,113,.2);
+}
+.btn-block, .btn-unblock {
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all .2s;
+}
+.btn-block {
+  border: 1px solid rgba(239,68,68,.2);
+  background: rgba(239,68,68,.08);
+  color: #f87171;
+}
+.btn-block:hover {
+  background: rgba(239,68,68,.2);
+  border-color: rgba(239,68,68,.35);
+}
+.btn-unblock {
+  border: 1px solid rgba(52,211,153,.2);
+  background: rgba(52,211,153,.08);
+  color: #34d399;
+}
+.btn-unblock:hover {
+  background: rgba(52,211,153,.18);
+}
+
+/* ── Confirmation Modal (Logout) ── */
+.confirm-overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(7,8,15,.82);backdrop-filter:blur(14px);
+  z-index:500;align-items:center;justify-content:center;
+}
+.confirm-overlay.open{display:flex}
+[data-theme="light"] .confirm-overlay{background:rgba(80,70,130,.3)}
+
+.confirm-box{
+  background:rgba(14,15,28,.97);
+  border:1px solid rgba(123,104,238,.22);
+  border-radius:24px;padding:2.5rem 2rem;
+  width:90%;max-width:380px;text-align:center;
+  box-shadow:0 40px 80px rgba(0,0,0,.7),0 0 60px rgba(123,104,238,.12);
+  animation:cboxIn .3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes cboxIn{from{opacity:0;transform:scale(.88) translateY(24px)}to{opacity:1;transform:scale(1) translateY(0)}}
+[data-theme="light"] .confirm-box{
+  background:rgba(250,249,255,.99);
+  border-color:rgba(79,70,229,.18);
+  box-shadow:0 20px 60px rgba(0,0,0,.12),0 0 40px rgba(79,70,229,.08);
+}
+
+.confirm-icon{
+  width:64px;height:64px;border-radius:50%;
+  background:rgba(251,191,36,.15);border:2px solid rgba(251,191,36,.3);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:28px;margin-bottom:1.25rem;color:#fbbf24;
+}
+[data-theme="light"] .confirm-icon{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.4);color:#d97706}
+
+.confirm-title{
+  font-family:'Syne',sans-serif;font-size:18px;font-weight:800;
+  color:var(--text);margin-bottom:.6rem;
+}
+.confirm-sub{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:1.5rem}
+
+.confirm-actions{display:flex;gap:10px;justify-content:center}
+.confirm-btn-cancel{
+  padding:11px 24px;border-radius:11px;
+  border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);
+  color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;
+  transition:all .2s;
+}
+.confirm-btn-cancel:hover{background:rgba(255,255,255,.1);color:var(--text)}
+[data-theme="light"] .confirm-btn-cancel{border-color:rgba(0,0,0,.1);background:rgba(0,0,0,.04)}
+[data-theme="light"] .confirm-btn-cancel:hover{background:rgba(0,0,0,.08);color:var(--text)}
+
+.confirm-btn-ok{
+  padding:11px 24px;border:none;border-radius:11px;
+  font-family:'Syne',sans-serif;font-size:13px;font-weight:700;
+  letter-spacing:.05em;cursor:pointer;transition:all .2s;
+}
+.confirm-btn-warn{
+  background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;
+  box-shadow:0 4px 16px rgba(245,158,11,.35);
+}
+.confirm-btn-warn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(245,158,11,.45)}
+.confirm-btn-danger{
+  background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;
+  box-shadow:0 4px 16px rgba(239,68,68,.35);
+}
+.confirm-btn-danger:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(239,68,68,.45)}
+/* Light theme confirm overrides */
+[data-theme="light"] .confirm-box{
+  background:rgba(250,249,255,.99);
+  border-color:rgba(79,70,229,.18);
+  box-shadow:0 20px 60px rgba(0,0,0,.12),0 0 40px rgba(79,70,229,.08);
+}
+[data-theme="light"] .confirm-title{color:var(--text)}
+[data-theme="light"] .confirm-sub{color:var(--text2)}
+[data-theme="light"] .confirm-btn-cancel{
+  border-color:rgba(0,0,0,.12);background:rgba(0,0,0,.04);color:var(--text2);
+}
+[data-theme="light"] .confirm-btn-cancel:hover{background:rgba(0,0,0,.08);color:var(--text)}
+[data-theme="light"] .confirm-icon{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-wrap">
+    <div class="logo-icon">🤖</div>
+    <div class="logo">PrepEdge AI</div>
+  </div>
+  <div class="header-right">
+    <span class="admin-badge">
+      {% if admin and admin.avatar_url %}
+      <img src="{{ admin.avatar_url }}" alt="{{ admin.username }}" class="user-avatar-img" id="admin-header-avatar">
+      {% else %}
+      <span id="admin-header-icon">⚙️</span>
+      {% endif %}
+      <span id="admin-header-username">{{ admin.username if admin else 'Admin' }}</span>
+    </span>
+    <button class="btn-sm" onclick="openNotifications()" style="position:relative;">
+      🔔 Notifications
+      <span id="notif-badge" style="display:none; position:absolute; top:-5px; right:-5px; background:var(--red); color:#fff; border-radius:50%; width:16px; height:16px; font-size:10px; align-items:center; justify-content:center;">0</span>
+    </button>
+    <button class="btn-sm profile-btn" onclick="openAdminProfile()">✏️ Profile</button>
+    <button class="btn-sm" id="admin-theme-btn" onclick="toggleAdminTheme()" title="Toggle theme" style="width:34px;padding:0;font-size:16px">🌙</button>
+    <button class="btn-sm logout-btn" onclick="openAdminLogoutModal()">⏻ Logout</button>
+  </div>
+</header>
+
+<div class="page">
+  <div class="page-top">
+    <div>
+      <div class="page-title">⚙️ Admin Dashboard</div>
+      <div class="page-sub">Manage users, view stats, and monitor activity</div>
+    </div>
+    <button class="btn-sm" onclick="location.reload()">↻ Refresh</button>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-val kpi-v-users">{{ stats.total_users }}</div>
+      <div class="kpi-lbl">Registered Users</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val kpi-v-sess">{{ stats.total_sessions }}</div>
+      <div class="kpi-lbl">Total Sessions</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val kpi-v-ans">{{ stats.total_answers }}</div>
+      <div class="kpi-lbl">Mock Answers</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val" style="color:var(--amber)">
+        {% if stats.total_users > 0 %}
+          {{ (stats.total_sessions // stats.total_users) if stats.total_users else 0 }}
+        {% else %}0{% endif %}
+      </div>
+      <div class="kpi-lbl">Avg Sessions / User</div>
+    </div>
+  </div>
+
+  <!-- Users Table -->
+<!-- Users Table -->
+<div class="users-card">
+  <div class="users-card-header">
+    <div class="users-card-title">
+      👥 Registered Users
+      <span class="user-count-badge">{{ users|length }}</span>
+    </div>
+    <div class="controls-row">
+      <input class="search-input" type="text" placeholder="🔍 Search users…" id="searchInput" oninput="filterUsers()"/>
+      <button class="sort-btn" id="sort-name" onclick="sortBy('name')">↕ Name</button>
+      <button class="sort-btn" id="sort-date" onclick="sortBy('date')">↕ Login</button>
+    </div>
+  </div>
+
+  {% if users %}
+  <div class="table-wrap">
+    <table id="users-table">
+      <thead>
+        <tr>
+          <th><span>#</span></th>
+          <th><span>User</span></th>
+          <th><span>Status</span></th>
+          <th><span>Actions</span></th>
+        </tr>
+      </thead>
+      <tbody id="users-tbody">
+        {% for u in users %}
+        <tr data-username="{{ u.username|lower }}" data-email="{{ (u.email or '')|lower }}" data-login="{{ u.last_login_at or '' }}">
+          <td><span class="user-id">#{{ u.id }}</span></td>
+          <td>
+            <div class="user-name">
+              <div class="u-avatar">{{ u.username[0].upper() if u.username else '?' }}</div>
+              <button class="u-name-link" data-action="openUserDetail" data-uid="{{ u.id }}">{{ u.username }}</button>
+            </div>
+          </td>
+          <td>
+            {% if u.is_blocked %}
+              <span class="status-badge blocked">⛔ Blocked</span>
+            {% else %}
+              <span class="status-badge active">✅ Active</span>
+            {% endif %}
+          </td>
+          <td>
+            <div class="actions-cell">
+              <button class="btn-reset-pw" data-action="resetPw" data-uid="{{ u.id }}" data-uname="{{ u.username }}">🔑 Reset PW</button>
+              {% if u.is_blocked %}
+                <button class="btn-unblock" data-action="unblock" data-uid="{{ u.id }}">🔓 Unblock User</button>
+              {% else %}
+                <button class="btn-block" data-action="block" data-uid="{{ u.id }}">🚫 Block User</button>
+              {% endif %}
+              <button class="btn-delete" data-action="deleteUser" data-uid="{{ u.id }}" data-uname="{{ u.username }}">🗑 Delete</button>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div>👥</div>
+    <p>No registered users yet.</p>
+  </div>
+  {% endif %}
+</div>
+</div>
+
+<!-- ── Reset Password Modal (modern eye) ── -->
+<div class="modal" id="resetPwModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title-text">
+        <span style="width:32px;height:32px;background:rgba(251,191,36,.15);border:1px solid rgba(251,191,36,.2);border-radius:9px;display:flex;align-items:center;justify-content:center">🔑</span>
+        Reset User Password
+      </div>
+      <button class="modal-close" onclick="closeResetPwModal()">×</button>
+    </div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:1rem">
+      Resetting password for: <strong id="rpw-username" style="color:var(--accent2)"></strong>
+    </p>
+    <div class="modal-field">
+      <label>New Password</label>
+      <div class="password-wrapper">
+        <input type="password" id="rpw-input" placeholder="Min 8 chars, upper, lower, digit, special" oninput="rpwStrength(this.value)"/>
+        <button type="button" class="toggle-password" onclick="togglePassword('rpw-input', this)">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        </button>
+      </div>
+      <div class="pw-bar-wrap"><div class="pw-bar" id="rpw-bar"></div></div>
+      <div class="pw-hint" id="rpw-hint"></div>
+    </div>
+    <div class="modal-field">
+      <label>Confirm Password</label>
+      <div class="password-wrapper">
+        <input type="password" id="rpw-confirm" placeholder="Repeat new password"/>
+        <button type="button" class="toggle-password" onclick="togglePassword('rpw-confirm', this)">
+          <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="modal-status" id="rpw-status"></div>
+    <button class="btn-modal" onclick="submitResetPw()">🔑 Reset Password</button>
+  </div>
+</div>
+
+<!-- ── Admin Profile Modal (modern eyes) ── -->
+<div class="modal" id="adminProfileModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title-text">
+        <span style="width:32px;height:32px;background:rgba(123,104,238,.2);border:1px solid rgba(123,104,238,.25);border-radius:9px;display:flex;align-items:center;justify-content:center">👤</span>
+        Admin Profile
+      </div>
+      <button class="modal-close" onclick="closeAdminProfile()">×</button>
+    </div>
+
+    <div class="pm-avatar-wrap">
+      <div class="pm-avatar-container" onclick="triggerAdminAvatarUpload()" title="Click to change profile picture">
+        {% if admin and admin.avatar_url %}
+        <img id="admin-avatar-big" class="pm-avatar-img" src="{{ admin.avatar_url }}" alt="Avatar">
+        {% else %}
+        <div id="admin-avatar-big" class="pm-avatar-big">{{ admin.username[0].upper() if admin else 'A' }}</div>
+        {% endif %}
+        <div class="avatar-hover-overlay">📷</div>
+      </div>
+      <input type="file" id="admin-avatar-input" accept="image/*" style="display:none" onchange="uploadAdminAvatar()">
+      <div class="pm-avatar-hint">Click to change photo</div>
+    </div>
+
+    <div class="pm-tabs">
+      <button class="pm-tab active" onclick="switchAdminTab('info')">Account Info</button>
+      <button class="pm-tab" onclick="switchAdminTab('password')">Change Password</button>
+    </div>
+
+    <!-- Info Panel -->
+    <div id="admin-panel-info">
+      <div class="modal-field">
+        <label>New Username</label>
+        <input type="text" id="ap-username" placeholder="Leave blank to keep current"/>
+        <div id="ap-un-hint" style="font-size:11px;color:var(--accent2);margin-top:4px;font-weight:600"></div>
+      </div>
+      <div class="modal-field">
+        <label>New Email</label>
+        <input type="email" id="ap-email" placeholder="Leave blank to keep current"/>
+        <div id="ap-em-hint" style="font-size:11px;color:var(--accent2);margin-top:4px;font-weight:600"></div>
+      </div>
+      <div class="modal-field">
+        <label>Current Password <span style="color:var(--red)">*</span></label>
+        <div class="password-wrapper">
+          <input type="password" id="ap-current-pw" placeholder="Required to save changes"/>
+          <button type="button" class="toggle-password" onclick="togglePassword('ap-current-pw', this)">
+            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal-status" id="ap-status-info"></div>
+      <button class="btn-modal" onclick="saveAdminInfo()">💾 Save Changes</button>
+    </div>
+
+    <!-- Password Panel -->
+    <div id="admin-panel-password" style="display:none">
+      <div class="modal-field">
+        <label>Current Password <span style="color:var(--red)">*</span></label>
+        <div class="password-wrapper">
+          <input type="password" id="ap-old-pw" placeholder="Your current admin password"/>
+          <button type="button" class="toggle-password" onclick="togglePassword('ap-old-pw', this)">
+            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal-field">
+        <label>New Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="ap-new-pw" placeholder="Min 8 chars including alphabet, digit and special chars" oninput="apStrength(this.value)"/>
+          <button type="button" class="toggle-password" onclick="togglePassword('ap-new-pw', this)">
+            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+        <div class="pw-bar-wrap"><div class="pw-bar" id="ap-pw-bar"></div></div>
+        <div class="pw-hint" id="ap-pw-hint"></div>
+      </div>
+      <div class="modal-field">
+        <label>Confirm New Password</label>
+        <div class="password-wrapper">
+          <input type="password" id="ap-confirm-pw" placeholder="Repeat new password"/>
+          <button type="button" class="toggle-password" onclick="togglePassword('ap-confirm-pw', this)">
+            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" fill="none">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="modal-status" id="ap-status-pw"></div>
+      <button class="btn-modal" onclick="saveAdminPassword()">🔐 Update Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ USER DETAIL DRAWER ════════════════════════════════════════════════ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeUserDetail()"></div>
+<div class="drawer" id="userDrawer" role="dialog" aria-modal="true" aria-label="User Details">
+  <div class="drawer-header">
+    <div class="drawer-title">
+      <div class="drawer-title-icon">👤</div>
+      User Details
+    </div>
+    <button class="drawer-close" onclick="closeUserDetail()" aria-label="Close user details">×</button>
+  </div>
+  <div class="drawer-body" id="drawerBody">
+    <div class="d-loading"><div class="d-spin"></div><div>Loading details…</div></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ══ NOTIFICATIONS DRAWER ════════════════════════════════════════════════ -->
+<div class="drawer-overlay" id="notifOverlay" onclick="closeNotifications()"></div>
+<div class="drawer" id="notifDrawer" role="dialog" aria-modal="true" aria-label="Notifications">
+  <div class="drawer-header">
+    <div class="drawer-title">
+      <div class="drawer-title-icon">🔔</div>
+      Notifications
+    </div>
+    <button class="drawer-close" onclick="closeNotifications()" aria-label="Close notifications">×</button>
+  </div>
+  <div class="drawer-body" id="notifBody" style="display:flex; flex-direction:column; gap:10px;">
+    <div class="d-loading"><div class="d-spin"></div><div>Loading notifications…</div></div>
+  </div>
+</div>
+
+<script>
+/* ── User-table action delegation (avoids Jinja2 in inline JS) ── */
+document.addEventListener('click', function(e) {
+  const btn = e.target.closest('[data-action]');
+  if (!btn) return;
+  const action = btn.dataset.action;
+  const uid    = Number(btn.dataset.uid);
+  const uname  = btn.dataset.uname || '';
+  switch (action) {
+    case 'openUserDetail': openUserDetail(uid);            break;
+    case 'resetPw':        openResetPwModal(uid, uname);   break;
+    case 'unblock':        unblockUser(uid);                break;
+    case 'block':          blockUser(uid);                  break;
+    case 'deleteUser':     deleteUser(uid, uname);          break;
+  }
+});
+
+/* ── Toast ── */
+function showToast(msg, dur=3000) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => t.classList.remove('show'), dur);
+}
+
+/* ── Generic Confirm Modal ── */
+let genericConfirmCallback = null;
+function showGenericConfirm(title, text, isDanger, callback) {
+  const mod = document.getElementById('generic-confirm-modal');
+  if (!mod) return;
+  document.getElementById('gcm-title').textContent = title;
+  document.getElementById('gcm-text').textContent = text;
+  
+  const icon = document.getElementById('gcm-icon');
+  const btn = document.getElementById('gcm-ok-btn');
+  if (isDanger) {
+    icon.className = 'confirm-icon confirm-icon-danger';
+    icon.textContent = '🗑';
+    btn.className = 'confirm-btn-ok confirm-btn-danger';
+  } else {
+    icon.className = 'confirm-icon confirm-icon-warn';
+    icon.textContent = '⚠️';
+    btn.className = 'confirm-btn-ok confirm-btn-warn';
+  }
+  
+  genericConfirmCallback = callback;
+  mod.style.display = 'flex';
+  mod.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeGenericConfirm() {
+  const mod = document.getElementById('generic-confirm-modal');
+  if (mod) {
+    mod.classList.remove('open');
+    setTimeout(() => { mod.style.display = 'none'; }, 300);
+  }
+  document.body.style.overflow = '';
+  genericConfirmCallback = null;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const gcmOkBtn = document.getElementById('gcm-ok-btn');
+  if (gcmOkBtn) {
+    gcmOkBtn.addEventListener('click', () => {
+      if (genericConfirmCallback) genericConfirmCallback();
+      closeGenericConfirm();
+    });
+  }
+});
+
+/* ── Notifications Logic ── */
+let adminNotifications = [];
+
+function openNotifications() {
+  document.getElementById('notifOverlay').classList.add('open');
+  document.getElementById('notifDrawer').classList.add('open');
+  fetchNotifications();
+}
+
+function closeNotifications() {
+  document.getElementById('notifOverlay').classList.remove('open');
+  document.getElementById('notifDrawer').classList.remove('open');
+}
+
+async function fetchNotifications() {
+  try {
+    const res = await fetch('/admin/notifications');
+    const data = await res.json();
+    adminNotifications = data;
+    renderNotifications();
+    updateNotifBadge();
+  } catch (e) {
+    document.getElementById('notifBody').innerHTML = '<div class="d-error">Failed to load notifications.</div>';
+  }
+}
+
+function updateNotifBadge() {
+  const unread = adminNotifications.filter(n => !n.is_read).length;
+  const badge = document.getElementById('notifBadge') || document.getElementById('notif-badge');
+  if (badge) {
+    if (unread > 0) {
+      badge.style.display = 'flex';
+      badge.textContent = unread;
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+}
+
+function renderNotifications() {
+  const body = document.getElementById('notifBody');
+  if (!adminNotifications.length) {
+    body.innerHTML = '<div class="d-empty">No notifications yet.</div>';
+    return;
+  }
+  
+  body.innerHTML = adminNotifications.map(n => `
+    <div class="session-chip" style="position:relative; flex-direction:column; align-items:flex-start; ${n.is_read ? 'opacity:0.7;' : 'border-left:3px solid var(--accent2);'}">
+      <button class="btn-sm" style="position:absolute; top:8px; right:8px; padding:2px 6px; font-size:12px; background:transparent; border:none; color:var(--text3); cursor:pointer;" onclick="deleteNotification(${n.id})" title="Delete Notification">&times;</button>
+      <div style="display:flex; justify-content:space-between; width:calc(100% - 20px); margin-bottom:5px;">
+        <span style="font-weight:700; color:var(--text); font-size:13px;">${n.title}</span>
+        <span style="font-size:10px; color:var(--text3);">${new Date(n.created_at).toLocaleString()}</span>
+      </div>
+      <div style="font-size:12px; color:var(--text2); margin-bottom:8px;">${n.message}</div>
+      <div style="display:flex; gap:8px;">
+        ${!n.is_read ? `<button class="btn-sm" onclick="markNotifRead(${n.id})" style="padding:4px 8px; font-size:11px;">Mark Read</button>` : ''}
+        ${n.type === 'contact' && n.related_request_id ? `<button class="btn-sm" style="padding:4px 8px; font-size:11px; background:rgba(34,211,238,.1); color:var(--cyan); border-color:rgba(34,211,238,.3);" onclick="resolveRequest(${n.related_request_id}, ${n.id})">Resolve Request</button>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+async function markNotifRead(id) {
+  try {
+    await fetch(`/admin/notifications/${id}/read`, { method: 'POST' });
+    const n = adminNotifications.find(x => x.id === id);
+    if (n) n.is_read = 1;
+    renderNotifications();
+    updateNotifBadge();
+  } catch (e) {
+    showToast('❌ Failed to mark as read.');
+  }
+}
+
+async function deleteNotification(id) {
+  try {
+    const res = await fetch(`/admin/notifications/${id}/delete`, { method: 'DELETE' });
+    if (!res.ok) throw new Error('Failed to delete');
+    adminNotifications = adminNotifications.filter(x => x.id !== id);
+    renderNotifications();
+    updateNotifBadge();
+  } catch (e) {
+    showToast('❌ Failed to delete notification.');
+  }
+}
+
+async function resolveRequest(reqId, notifId) {
+  try {
+    const res = await fetch(`/admin/contact_requests/${reqId}/resolve`, { method: 'POST' });
+    if (res.ok) {
+      showToast('✅ Request resolved!');
+      markNotifRead(notifId);
+    } else {
+      showToast('❌ Failed to resolve request.');
+    }
+  } catch (e) {
+    showToast('❌ Network error.');
+  }
+}
+
+/* Fetch automatically on load */
+document.addEventListener('DOMContentLoaded', () => {
+  fetchNotifications();
+});
+
+/* ── Delete User ── */
+async function deleteUser(userId, username) {
+  showGenericConfirm('Delete User?', `Delete user "${username}" (ID: ${userId})?\n\nThis will permanently delete all their sessions and data.`, true, async () => {
+    try {
+      const res  = await fetch(`/admin/delete-user/${userId}`, { method:'POST', headers:{'Content-Type':'application/json'} });
+      const data = await res.json();
+      if (res.ok && data.status === 'ok') {
+        showToast(`✅ "${username}" deleted!`);
+        setTimeout(() => location.reload(), 1500);
+      } else {
+        showToast(`❌ ${data.error || 'Failed to delete.'}`);
+      }
+    } catch(e) { showToast('❌ Network error.'); }
+  });
+}
+
+/* ── Search / Filter ── */
+function filterUsers() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  document.querySelectorAll('#users-tbody tr').forEach(row => {
+    const un  = row.dataset.username || '';
+    const em  = row.dataset.email    || '';
+    row.style.display = (!q || un.includes(q) || em.includes(q)) ? '' : 'none';
+  });
+}
+
+/* ── Sort ── */
+let sortDir = { name: 1, date: 1 };
+function sortBy(key) {
+  const tbody = document.getElementById('users-tbody');
+  if (!tbody) return;
+  const rows = Array.from(tbody.querySelectorAll('tr'));
+  sortDir[key] *= -1;
+  rows.sort((a, b) => {
+    const va = key === 'name' ? (a.dataset.username || '') : (a.dataset.login || '');
+    const vb = key === 'name' ? (b.dataset.username || '') : (b.dataset.login || '');
+    return va.localeCompare(vb) * sortDir[key];
+  });
+  rows.forEach(r => tbody.appendChild(r));
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`sort-${key}`)?.classList.add('active');
+}
+
+/* ── Reset Password Modal ── */
+let rpwUserId = null;
+function openResetPwModal(userId, username) {
+  rpwUserId = userId;
+  document.getElementById('rpw-username').textContent = username;
+  document.getElementById('rpw-input').value   = '';
+  document.getElementById('rpw-confirm').value = '';
+  document.getElementById('rpw-bar').style.width = '0';
+  document.getElementById('rpw-hint').textContent = '';
+  const stat = document.getElementById('rpw-status');
+  stat.textContent = ''; stat.className = 'modal-status';
+  document.getElementById('resetPwModal').classList.add('open');
+  setTimeout(() => document.getElementById('rpw-input')?.focus(), 100);
+}
+function closeResetPwModal() {
+  document.getElementById('resetPwModal').classList.remove('open');
+  rpwUserId = null;
+}
+document.getElementById('resetPwModal').addEventListener('click', function(e) {
+  if (e.target === this) closeResetPwModal();
+});
+
+async function submitResetPw() {
+  const pw      = document.getElementById('rpw-input')?.value || '';
+  const confirm = document.getElementById('rpw-confirm')?.value || '';
+  const stat    = document.getElementById('rpw-status');
+  if (!pw) { showModalStatus(stat,'Password is required.','err'); return; }
+  if (pw !== confirm) { showModalStatus(stat,'Passwords do not match.','err'); return; }
+
+  try {
+    // ✅ CORRECTED URL
+    const res  = await fetch(`/admin/reset-user-password/${rpwUserId}`, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ password: pw })
+    });
+    const data = await res.json();
+    if (!res.ok || data.error) { showModalStatus(stat, data.error || 'Failed.', 'err'); return; }
+    showModalStatus(stat, '✅ Password reset!', 'ok');
+    showToast('🔑 Password reset!');
+    setTimeout(closeResetPwModal, 1800);
+  } catch(e) { showModalStatus(stat,'❌ Network error.','err'); }
+}
+
+function rpwStrength(pw) { pwStrengthCalc(pw, 'rpw-bar', 'rpw-hint'); }
+
+/* ── Admin Profile Modal ── */
+function openAdminProfile() {
+  document.getElementById('adminProfileModal').classList.add('open');
+  clearAdminProfileInputs();
+  // Pre-fill current admin values
+  fetch('/admin/me').then(r=>r.json()).then(d=>{
+    const un = document.getElementById('ap-username');
+    const em = document.getElementById('ap-email');
+    if(un){ un.placeholder = d.username || ''; un.dataset.current = d.username || ''; }
+    if(em){ em.placeholder = d.email    || ''; em.dataset.current = d.email    || ''; }
+    const unHint = document.getElementById('ap-un-hint');
+    const emHint = document.getElementById('ap-em-hint');
+    if(unHint) unHint.textContent = 'Current: ' + (d.username || '—');
+    if(emHint) emHint.textContent = 'Current: ' + (d.email    || '—');
+    // Show admin avatar
+    const av = document.getElementById('admin-avatar-big');
+    if (av) {
+      if (d.avatar_url) {
+        av.outerHTML = `<img id="admin-avatar-big" class="pm-avatar-img" src="${d.avatar_url}" alt="Avatar">`;
+      } else if (d.username) {
+        if (av.tagName === 'IMG') {
+          av.outerHTML = `<div id="admin-avatar-big" class="pm-avatar-big">${d.username[0].toUpperCase()}</div>`;
+        } else {
+          av.textContent = d.username[0].toUpperCase();
+        }
+      }
+    }
+  }).catch(()=>{});
+}
+
+function triggerAdminAvatarUpload() {
+  const input = document.getElementById('admin-avatar-input');
+  if (input) input.click();
+}
+
+async function uploadAdminAvatar() {
+  const input = document.getElementById('admin-avatar-input');
+  if (!input || !input.files || !input.files[0]) return;
+  const file = input.files[0];
+  const allowed = ['image/png', 'image/jpeg', 'image/webp', 'image/gif'];
+  if (!allowed.includes(file.type)) { showToast('❌ Only PNG, JPG, WEBP or GIF images allowed.'); return; }
+  if (file.size > 2 * 1024 * 1024) { showToast('❌ Image too large. Max 2 MB.'); return; }
+  const formData = new FormData();
+  formData.append('avatar', file);
+  try {
+    showToast('⏳ Uploading…', 1500);
+    const res = await fetch('/admin/profile/avatar', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (data.error) { showToast('❌ ' + data.error); return; }
+    const avBig = document.getElementById('admin-avatar-big');
+    if (avBig) {
+      avBig.outerHTML = `<img id="admin-avatar-big" class="pm-avatar-img" src="${data.avatar_url}" alt="Avatar">`;
+    }
+    // Update admin header avatar
+    const headerAv = document.getElementById('admin-header-avatar');
+    if (headerAv) {
+      headerAv.src = data.avatar_url;
+    } else {
+      const icon = document.getElementById('admin-header-icon');
+      if (icon) {
+        icon.outerHTML = `<img src="${data.avatar_url}" alt="Admin" class="user-avatar-img" id="admin-header-avatar">`;
+      }
+    }
+    showToast('✅ Admin profile picture updated!');
+  } catch (e) {
+    showToast('❌ Upload failed. Check your connection.');
+  }
+  input.value = '';
+}
+
+async function blockUser(userId) {
+  _pendingBlockUserId   = userId;
+  _pendingBlockIsBlock  = true;
+  const modal = document.getElementById('block-confirm-modal');
+  document.getElementById('block-confirm-title').textContent    = 'Block This User?';
+  document.getElementById('block-confirm-sub').textContent      = 'This user will not be able to log in until you unblock them.';
+  document.getElementById('block-confirm-icon').textContent     = '🚫';
+  document.getElementById('block-confirm-ok').textContent       = 'Yes, Block';
+  document.getElementById('block-confirm-ok').className        = 'confirm-btn-ok confirm-btn-danger';
+  if (modal) { modal.classList.add('open'); document.body.style.overflow = 'hidden'; }
+}
+
+async function unblockUser(userId) {
+  _pendingBlockUserId   = userId;
+  _pendingBlockIsBlock  = false;
+  const modal = document.getElementById('block-confirm-modal');
+  document.getElementById('block-confirm-title').textContent    = 'Unblock This User?';
+  document.getElementById('block-confirm-sub').textContent      = 'This user will be able to log in again immediately.';
+  document.getElementById('block-confirm-icon').textContent     = '✅';
+  document.getElementById('block-confirm-ok').textContent       = 'Yes, Unblock';
+  document.getElementById('block-confirm-ok').className        = 'confirm-btn-ok confirm-btn-warn';
+  if (modal) { modal.classList.add('open'); document.body.style.overflow = 'hidden'; }
+}
+
+let _pendingBlockUserId  = null;
+let _pendingBlockIsBlock = true;
+
+function closeBlockConfirmModal() {
+  const modal = document.getElementById('block-confirm-modal');
+  if (modal) { modal.classList.remove('open'); document.body.style.overflow = ''; }
+  _pendingBlockUserId = null;
+}
+
+async function confirmBlockAction() {
+  if (!_pendingBlockUserId) return;
+  const userId   = _pendingBlockUserId;
+  const isBlock  = _pendingBlockIsBlock;
+  closeBlockConfirmModal();
+  const url = isBlock ? `/admin/block-user/${userId}` : `/admin/unblock-user/${userId}`;
+  try {
+    const res  = await fetch(url, { method: 'POST' });
+    const data = await res.json();
+    if (data.status === 'ok') {
+      showToast(isBlock ? '🚫 User blocked.' : '✅ User unblocked.');
+      setTimeout(() => location.reload(), 1200);
+    } else {
+      showToast('❌ ' + (data.error || 'Action failed.'));
+    }
+  } catch(e) { showToast('❌ Network error.'); }
+}
+
+function closeAdminProfile() {
+  document.getElementById('adminProfileModal').classList.remove('open');
+  clearAdminProfileInputs();
+}
+document.getElementById('adminProfileModal').addEventListener('click', function(e) {
+  if (e.target === this) closeAdminProfile();
+});
+
+function switchAdminTab(tab) {
+  document.querySelectorAll('.pm-tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='info')||(i===1&&tab==='password')));
+  document.getElementById('admin-panel-info').style.display     = tab==='info' ? 'block' : 'none';
+  document.getElementById('admin-panel-password').style.display = tab==='password' ? 'block' : 'none';
+}
+
+function clearAdminProfileInputs() {
+  ['ap-username','ap-email','ap-current-pw','ap-old-pw','ap-new-pw','ap-confirm-pw'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const bar  = document.getElementById('ap-pw-bar');
+  const hint = document.getElementById('ap-pw-hint');
+  if (bar)  bar.style.width = '0';
+  if (hint) hint.textContent = '';
+  ['ap-status-info','ap-status-pw'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = ''; el.className = 'modal-status'; }
+  });
+}
+
+async function saveAdminInfo() {
+  const username  = (document.getElementById('ap-username')?.value || '').trim();
+  const email     = (document.getElementById('ap-email')?.value || '').trim();
+  const currentPw = document.getElementById('ap-current-pw')?.value || '';
+  const stat      = document.getElementById('ap-status-info');
+  if (!username && !email) { showModalStatus(stat,'Enter a new username or email.','err'); return; }
+  if (!currentPw) { showModalStatus(stat,'Current password is required.','err'); return; }
+  showModalStatus(stat,'Saving…','');
+  try {
+    // ✅ CORRECTED URL
+    const res  = await fetch('/admin/profile/update', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ username, email, current_password: currentPw })
+    });
+    const data = await res.json();
+    if (data.error) { showModalStatus(stat,'❌ ' + data.error,'err'); return; }
+    showModalStatus(stat,'✅ ' + data.message,'ok');
+    showToast('✅ Admin profile updated!');
+    if (data.username) {
+      const badge = document.querySelector('.admin-badge');
+      if (badge) badge.textContent = '⚙️ ' + data.username;
+    }
+    clearAdminProfileInputs();
+  } catch(e) { showModalStatus(stat,'❌ Network error.','err'); }
+}
+
+async function saveAdminPassword() {
+  const oldPw     = document.getElementById('ap-old-pw')?.value || '';
+  const newPw     = document.getElementById('ap-new-pw')?.value || '';
+  const confirmPw = document.getElementById('ap-confirm-pw')?.value || '';
+  const stat      = document.getElementById('ap-status-pw');
+  if (!oldPw)  { showModalStatus(stat,'Current password required.','err'); return; }
+  if (!newPw)  { showModalStatus(stat,'New password required.','err'); return; }
+  if (newPw !== confirmPw) { showModalStatus(stat,'Passwords do not match.','err'); return; }
+  showModalStatus(stat,'Updating…','');
+  try {
+    const res  = await fetch('/admin/profile/update', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ 
+        current_password: oldPw, 
+        new_password: newPw,
+        confirm_password: confirmPw   // ✅ added this field
+      })
+    });
+    const data = await res.json();
+    if (data.error) { showModalStatus(stat,'❌ ' + data.error,'err'); return; }
+    showModalStatus(stat,'✅ Password updated!','ok');
+    showToast('🔐 Password changed!');
+    clearAdminProfileInputs();
+  } catch(e) { showModalStatus(stat,'❌ Network error.','err'); }
+}
+
+function apStrength(pw) { pwStrengthCalc(pw, 'ap-pw-bar', 'ap-pw-hint'); }
+
+/* ── Shared helpers ── */
+function showModalStatus(el, msg, type) {
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'modal-status' + (type === 'err' ? ' err' : type === 'ok' ? ' ok' : '');
+}
+
+/* ── Admin Theme ── */
+(function(){
+  const t = localStorage.getItem('prepedge-theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  const btn = document.getElementById('admin-theme-btn');
+  if(btn) btn.textContent = t === 'light' ? '☀️' : '🌙';
+})();
+function toggleAdminTheme(){
+  const cur  = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('prepedge-theme', next);
+  const btn = document.getElementById('admin-theme-btn');
+  if(btn) btn.textContent = next === 'light' ? '☀️' : '🌙';
+}
+
+function pwStrengthCalc(pw, barId, hintId) {
+  const bar  = document.getElementById(barId);
+  const hint = document.getElementById(hintId);
+  if (!bar || !hint || !pw) { if(bar) bar.style.width='0'; if(hint) hint.textContent=''; return; }
+  let score = 0;
+  if(pw.length>=8)           score++;
+  if(/[A-Z]/.test(pw))      score++;
+  if(/[a-z]/.test(pw))      score++;
+  if(/[0-9]/.test(pw))      score++;
+  if(/[^A-Za-z0-9]/.test(pw)) score++;
+  const map=[
+    {pct:'20%',bg:'#ef4444',label:'Very weak'},
+    {pct:'40%',bg:'#f97316',label:'Weak'},
+    {pct:'60%',bg:'#eab308',label:'Fair'},
+    {pct:'80%',bg:'#22c55e',label:'Strong'},
+    {pct:'100%',bg:'#16a34a',label:'Very strong'},
+  ];
+  const s = map[score-1] || map[0];
+  bar.style.width = s.pct; bar.style.background = s.bg;
+  hint.textContent = s.label; hint.style.color = s.bg;
+}
+
+/* ── Modern Password Toggle Function (switches SVG icon) ── */
+function togglePassword(inputId, btnElement) {
+  const input = document.getElementById(inputId);
+  if (!input) return;
+  const isPassword = input.type === 'password';
+  input.type = isPassword ? 'text' : 'password';
+  const svg = btnElement.querySelector('svg');
+  if (svg) {
+    if (isPassword) {
+      svg.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="1.5"/>`;
+    } else {
+      svg.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+    }
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════
+   USER DETAIL DRAWER
+════════════════════════════════════════════════════════════════ */
+function openUserDetail(userId) {
+  const overlay = document.getElementById('drawerOverlay');
+  const drawer  = document.getElementById('userDrawer');
+  const body    = document.getElementById('drawerBody');
+
+  // Show loading state immediately
+  body.innerHTML = '<div class="d-loading"><div class="d-spin"></div><div>Loading details…</div></div>';
+  overlay.classList.add('open');
+  drawer.classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  fetch('/admin/user/' + userId + '/detail')
+    .then(r => r.json())
+    .then(d => {
+      if (d.error) {
+        body.innerHTML = '<div class="d-error">❌ ' + escHtml(d.error) + '</div>';
+        return;
+      }
+      body.innerHTML = renderUserDetail(d);
+    })
+    .catch(() => {
+      body.innerHTML = '<div class="d-error">❌ Network error — could not load user details.</div>';
+    });
+}
+
+function closeUserDetail() {
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('userDrawer').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ESC key closes drawer (and modals)
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeUserDetail();
+    closeResetPwModal();
+    closeAdminProfile();
+  }
+});
+
+function renderUserDetail(d) {
+  const initials = (d.username || '?')[0].toUpperCase();
+
+  /* ── Avatar + name header ── */
+  const avatarRow = `
+    <div class="d-avatar-row">
+      <div class="d-avatar-big">${escHtml(initials)}</div>
+      <div>
+        <div class="d-username-big">${escHtml(d.username || '')}</div>
+        <div class="d-email-big">${escHtml(d.email || 'No email on file')}</div>
+      </div>
+    </div>`;
+
+  /* ── Account information ── */
+  const infoFields = [
+    ['Email',        d.email              || 'Not available'],
+    ['Registered',   d.created_at_ist     || 'Not available'],
+    ['Last Login',   d.last_login_at_ist  || 'Not available'],
+    ['Last Logout',  d.last_logout_at_ist || 'Not available'],
+  ];
+  const infoRows = infoFields.map(([label, val]) =>
+    `<div class="d-row">
+       <span class="d-label">${label}</span>
+       <span class="d-val">${escHtml(String(val))}</span>
+     </div>`
+  ).join('');
+
+  const infoSection = `
+    <div class="d-section">
+      <div class="d-section-title">📋 Account Information</div>
+      ${infoRows}
+    </div>`;
+
+  /* ── Sessions ── */
+  const sessions = d.sessions || [];
+  const sessItems = sessions.length === 0
+    ? '<div class="d-empty">No interview sessions yet.</div>'
+    : '<div class="d-list">' + sessions.map(s => `
+        <div class="session-chip">
+          <div style="flex:1;overflow:hidden">
+            <div class="session-chip-title" title="${escHtml(s.job_title || '')}">🎤 ${escHtml(s.job_title || 'Untitled')}</div>
+            <div class="session-chip-exp">${escHtml(s.experience || '')}</div>
+          </div>
+          <div class="session-chip-meta">${escHtml(s.created_at_ist || '')}</div>
+        </div>`).join('') + '</div>';
+
+  const sessSection = `
+    <div class="d-section">
+      <div class="d-section-title">
+        🎤 Mock Interview Sessions
+        <span class="d-section-badge">${sessions.length} total</span>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-bottom:.6rem;margin-top:-.3rem">Each entry shows the exact role practiced in that session.</p>
+      ${sessItems}
+    </div>`;
+
+  /* ── Practiced roles summary (deduplicated) ── */
+  const roles = d.job_roles || [];
+  const roleItems = roles.length === 0
+    ? '<div class="d-empty">No roles practiced yet.</div>'
+    : '<div class="d-list">' + roles.map(r => `
+        <div class="role-chip">
+          <div style="flex:1;overflow:hidden">
+            <div class="role-chip-title" title="${escHtml(r.job_title || '')}">💼 ${escHtml(r.job_title || 'Unknown')}</div>
+            <div style="font-size:10px;color:var(--text3);margin-top:2px">First: ${escHtml(r.first_at_ist || '')}</div>
+          </div>
+          <div class="role-chip-right">
+            <div class="role-chip-count">${r.count || 0} session${r.count !== 1 ? 's' : ''}</div>
+            <div class="role-chip-date">Last: ${escHtml(r.last_at_ist || '')}</div>
+          </div>
+        </div>`).join('') + '</div>';
+
+  const rolesSection = `
+    <div class="d-section">
+      <div class="d-section-title">
+        📊 Practiced Roles Summary
+        <span class="d-section-badge">${roles.length} unique</span>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-bottom:.6rem;margin-top:-.3rem">Distinct job roles this user has practiced mock interviews for.</p>
+      ${roleItems}
+    </div>`;
+
+  return avatarRow + infoSection + sessSection + rolesSection;
+}
+
+/* XSS-safe HTML escaper */
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+</script>
+<!-- ── Block / Unblock Confirmation Modal ── -->
+<div id="block-confirm-modal" class="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="block-confirm-icon">🚫</div>
+    <h2 class="confirm-title" id="block-confirm-title">Block This User?</h2>
+    <p class="confirm-sub" id="block-confirm-sub">This user will not be able to log in until you unblock them.</p>
+    <div class="confirm-actions">
+      <button class="confirm-btn-cancel" onclick="closeBlockConfirmModal()">Cancel</button>
+      <button class="confirm-btn-ok confirm-btn-danger" id="block-confirm-ok" onclick="confirmBlockAction()">Yes, Block</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Admin Logout Confirmation Modal ── -->
+<div id="admin-logout-modal" class="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">⏻</div>
+    <h2 class="confirm-title">Log Out?</h2>
+    <p class="confirm-sub">You'll be returned to the login page and will need to sign in again.</p>
+    <div class="confirm-actions">
+      <button class="confirm-btn-cancel" onclick="closeAdminLogoutModal()">Cancel</button>
+      <button class="confirm-btn-ok confirm-btn-warn" onclick="window.location.href='/logout'">Yes, Log Out</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function openAdminLogoutModal() {
+  const m = document.getElementById('admin-logout-modal');
+  if (m) { m.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+}
+function closeAdminLogoutModal() {
+  const m = document.getElementById('admin-logout-modal');
+  if (m) { m.style.display = 'none'; document.body.style.overflow = ''; }
+}
+document.getElementById('admin-logout-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeAdminLogoutModal();
+});
+document.getElementById('block-confirm-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeBlockConfirmModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeAdminLogoutModal();
+    closeBlockConfirmModal();
+  }
+});
+</script>
+<!-- ══ GENERIC CONFIRMATION MODAL ═════════════════════════════ -->
+<div id="generic-confirm-modal" class="confirm-overlay" style="display:none">
+  <div class="confirm-box">
+    <div class="confirm-icon confirm-icon-warn" id="gcm-icon">⚠️</div>
+    <h2 class="confirm-title" id="gcm-title">Are you sure?</h2>
+    <p class="confirm-sub" id="gcm-text">This action cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="confirm-btn-cancel" onclick="closeGenericConfirm()">Cancel</button>
+      <button class="confirm-btn-ok confirm-btn-warn" id="gcm-ok-btn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

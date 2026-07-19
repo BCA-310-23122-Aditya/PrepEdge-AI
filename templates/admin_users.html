@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Users — Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        :root{
+            --bg:#07080f;--surface:rgba(255,255,255,.04);--border:rgba(255,255,255,.08);
+            --text:#e8eaf6;--text2:#9ba3c2;--text3:#555e82;
+            --accent:#7b68ee;--accent2:#a78bfa;--green:#34d399;--red:#f87171;
+        }
+        body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+        body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+            background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(123,104,238,.15) 0%,transparent 60%);
+        }
+        header{
+            position:sticky;top:0;z-index:100;
+            background:rgba(7,8,15,.75);backdrop-filter:blur(20px);
+            border-bottom:1px solid rgba(123,104,238,.15);
+            padding:0 2rem;height:64px;
+            display:flex;align-items:center;justify-content:space-between;
+        }
+        .logo{font-family:'Syne',sans-serif;font-size:1.1rem;font-weight:800;background:linear-gradient(130deg,#c4b5fd,#7b68ee,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .btn{padding:8px 16px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);font-size:13px;font-weight:500;color:var(--text2);cursor:pointer;text-decoration:none;font-family:inherit;transition:all .2s}
+        .btn:hover{background:rgba(255,255,255,.08);color:var(--text)}
+        .btn-primary{background:rgba(123,104,238,.2);color:var(--accent2);border-color:rgba(123,104,238,.3)}
+        .btn-danger{background:rgba(248,113,113,.1);color:var(--red);border-color:rgba(248,113,113,.2)}
+        .btn-danger:hover{background:rgba(248,113,113,.2)}
+        .page{max-width:1200px;margin:0 auto;padding:2rem 1.5rem;position:relative;z-index:1}
+        .page-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:1.5rem;background:linear-gradient(130deg,#fff,#c4b5fd,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .nav-tabs{display:flex;gap:8px;margin-bottom:1.5rem}
+        .nav-tab{padding:8px 16px;border-radius:10px;font-size:13px;font-weight:500;color:var(--text2);text-decoration:none;border:1px solid transparent}
+        .nav-tab.active{background:rgba(123,104,238,.15);color:var(--accent2);border-color:rgba(123,104,238,.2)}
+        .card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:1.5rem;backdrop-filter:blur(12px);margin-bottom:1.5rem}
+        .card-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:1rem}
+        .form-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:1rem}
+        .form-group{display:flex;flex-direction:column;gap:6px}
+        .form-group label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em}
+        .form-group input,.form-group select{width:100%;padding:10px 13px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:10px;font-size:14px;color:var(--text);font-family:inherit}
+        table{width:100%;border-collapse:collapse;font-size:13px}
+        th{text-align:left;padding:12px;font-family:'Syne',sans-serif;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;border-bottom:1px solid var(--border)}
+        td{padding:12px;border-bottom:1px solid rgba(255,255,255,.04)}
+        tr:hover td{background:rgba(123,104,238,.03)}
+        .modal{display:none;position:fixed;inset:0;background:rgba(7,8,15,.8);backdrop-filter:blur(16px);z-index:300;align-items:center;justify-content:center}
+        .modal.active{display:flex}
+        .modal-box{background:rgba(14,15,28,.95);border:1px solid rgba(123,104,238,.15);border-radius:18px;padding:1.5rem;width:90%;max-width:500px;box-shadow:0 40px 80px rgba(0,0,0,.6)}
+        .flash{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);padding:12px 16px;border-radius:10px;margin-bottom:1rem;font-size:13px;color:var(--green)}
+        .flash.error{background:rgba(248,113,113,.1);border-color:rgba(248,113,113,.2);color:var(--red)}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">⚙️ Admin Panel</div>
+        <div style="display:flex;gap:8px">
+            <a href="/admin" class="btn">Dashboard</a>
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+    </header>
+
+    <div class="page">
+        <h1 class="page-title">👥 Manage Users</h1>
+
+        <div class="nav-tabs">
+            <a href="/admin" class="nav-tab">Overview</a>
+            <a href="/admin/users" class="nav-tab active">Users</a>
+            <a href="/admin/roles" class="nav-tab">Roles</a>
+            <a href="/admin/questions" class="nav-tab">Questions</a>
+            <a href="/admin/analytics" class="nav-tab">Analytics</a>
+            <a href="/admin/logs" class="nav-tab">Logs</a>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for cat, msg in messages %}
+                    <div class="flash {% if cat == 'error' %}error{% endif %}">{{ msg }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Add User Form -->
+        <div class="card">
+            <h3 class="card-title">➕ Add New User</h3>
+            <form method="POST" action="/admin/users/add">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" name="username" required placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email" required placeholder="user@example.com">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" name="password" required placeholder="Min 8 characters">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Create User</button>
+            </form>
+        </div>
+
+        <!-- Users Table -->
+        <div class="card">
+            <h3 class="card-title">📋 All Users ({{ users|length }})</h3>
+            <div style="overflow-x:auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Registered</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>{{ user.id }}</td>
+                            <td style="font-weight:600">{{ user.username }}</td>
+                            <td>{{ user.email or 'N/A' }}</td>
+                            <td style="font-size:12px;color:var(--text3)">{{ to_ist(user.created_at) or '—' }}</td>
+                            <td style="font-size:12px;color:var(--text3)">{{ to_ist(user.last_login_at) or '—' }}</td>
+                            <td style="display:flex;gap:6px">
+                                <button class="btn" data-action="editUser" data-uid="{{ user.id }}" data-uname="{{ user.username }}" data-uemail="{{ user.email }}" style="font-size:12px;padding:5px 10px">✏️ Edit</button>
+                                <form method="POST" action="/admin/users/{{ user.id }}/delete" onsubmit="return confirm('Delete this user?')">
+                                    <button type="submit" class="btn btn-danger" style="font-size:12px;padding:5px 10px">🗑 Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div class="modal" id="editModal">
+        <div class="modal-box">
+            <div style="display:flex;justify-content:space-between;margin-bottom:1rem">
+                <h3 style="font-family:Syne">✏️ Edit User</h3>
+                <button class="btn" onclick="closeModal()" style="padding:4px 8px">×</button>
+            </div>
+            <form method="POST" id="editForm">
+                <div class="form-group" style="margin-bottom:12px">
+                    <label>Username</label>
+                    <input type="text" name="username" id="editUsername" required>
+                </div>
+                <div class="form-group" style="margin-bottom:12px">
+                    <label>Email</label>
+                    <input type="email" name="email" id="editEmail" required>
+                </div>
+                <div class="form-group" style="margin-bottom:12px">
+                    <label>New Password (leave blank to keep current)</label>
+                    <input type="password" name="password" placeholder="Optional">
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('click', function(e) {
+            const btn = e.target.closest('[data-action]');
+            if (!btn) return;
+            if (btn.dataset.action === 'editUser') {
+                editUser(btn.dataset.uid, btn.dataset.uname, btn.dataset.uemail);
+            }
+        });
+
+        function editUser(id, username, email) {
+            const modal = document.getElementById('editModal');
+            document.getElementById('editForm').action = `/admin/users/${id}/edit`;
+            document.getElementById('editUsername').value = username;
+            document.getElementById('editEmail').value = email;
+            modal.classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('editModal').classList.remove('active');
+        }
+        
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+    </script>
+</body>
+</html>

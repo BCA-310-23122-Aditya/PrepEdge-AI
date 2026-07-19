@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrepEdge AI — AI-Powered Interview Prep</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07080f;
+      --card-bg: rgba(255, 255, 255, .04);
+      --border: rgba(123, 104, 238, .2);
+      --text: #e8eaf6;
+      --text2: #9ba3c2;
+      --text3: #555e82;
+      --accent: #7b68ee;
+      --accent2: #a78bfa;
+      --cyan: #22d3ee;
+      --green: #34d399;
+      --red: #f87171;
+      --surface: rgba(255, 255, 255, .04);
+    }
+
+    [data-theme="light"] {
+      --bg: #f5f4f0;
+      --card-bg: rgba(255, 255, 255, .94);
+      --border: rgba(79, 70, 229, .2);
+      --text: #1a1523;
+      --text2: #4b4569;
+      --text3: #8b85a0;
+      --accent: #4f46e5;
+      --accent2: #6d28d9;
+      --cyan: #0891b2;
+      --green: #059669;
+      --red: #dc2626;
+      --surface: rgba(79, 70, 229, .05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background .3s, color .3s;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 70% at 80% 10%, rgba(167, 139, 250, .18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 10% 80%, rgba(34, 211, 238, .1) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 60% at 50% 50%, rgba(123, 104, 238, .06) 0%, transparent 60%),
+        linear-gradient(160deg, #07080f 0%, #0a0c1a 50%, #07080f 100%);
+      animation: aur 18s ease-in-out infinite alternate;
+    }
+
+    [data-theme="light"] body::before {
+      background: radial-gradient(ellipse 80% 70% at 80% 10%, rgba(99, 102, 241, .1) 0%, transparent 60%),
+        linear-gradient(160deg, #f5f4f0 0%, #edecea 50%, #f5f4f0 100%);
+      animation: none;
+    }
+
+    @keyframes aur {
+      0% { opacity: 1 }
+      100% { opacity: .8 }
+    }
+
+    /* ── Layout ── */
+    .wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 0;
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #7b68ee, #a78bfa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      box-shadow: 0 4px 20px rgba(123, 104, 238, .45);
+    }
+
+    .brand-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      background: linear-gradient(130deg, #c4b5fd, #7b68ee, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    [data-theme="light"] .brand-name {
+      background: linear-gradient(130deg, #4f46e5, #6d28d9, #2563eb);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .nav-link {
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-link:hover {
+      color: var(--text);
+    }
+
+    .theme-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(12px);
+      transition: all .2s;
+    }
+
+    .theme-btn:hover {
+      transform: scale(1.08)
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-block;
+      padding: 13px 28px;
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .05em;
+      text-decoration: none;
+      text-align: center;
+      text-transform: uppercase;
+      transition: all .25s;
+      background: linear-gradient(135deg, #7b68ee, #a78bfa, #60a5fa);
+      background-size: 200% 200%;
+      animation: gm 4s ease infinite;
+      box-shadow: 0 4px 20px rgba(123, 104, 238, .4);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(123, 104, 238, .55);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--accent2);
+      color: var(--text);
+      box-shadow: none;
+      animation: none;
+    }
+    
+    .btn-outline:hover {
+      background: rgba(123, 104, 238, .1);
+      box-shadow: 0 4px 20px rgba(123, 104, 238, .2);
+    }
+
+    @keyframes gm {
+      0%, 100% { background-position: 0% 50% }
+      50% { background-position: 100% 50% }
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 6rem 0 4rem;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 1.5rem;
+      padding: 6px 16px;
+      border-radius: 20px;
+      background: rgba(123, 104, 238, .15);
+      border: 1px solid rgba(123, 104, 238, .25);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent2);
+      font-family: 'Syne', sans-serif;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .hero-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: blink 2s ease-in-out infinite
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -.03em;
+      margin-bottom: 1.5rem;
+      background: linear-gradient(130deg, #fff 0%, #c4b5fd 45%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    [data-theme="light"] .hero h1 {
+      background: linear-gradient(130deg, #1a1523 0%, #4f46e5 45%, #2563eb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--text2);
+      line-height: 1.75;
+      margin-bottom: 2.5rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-btns {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    /* ── Features ── */
+    .section {
+      padding: 5rem 0;
+    }
+
+    .section-title {
+      text-align: center;
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 3rem;
+      color: var(--text);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .feat-icon-lg {
+      width: 50px;
+      height: 50px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, rgba(123, 104, 238, .15), rgba(34, 211, 238, .15));
+      border: 1px solid rgba(123, 104, 238, .2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 1.5rem;
+    }
+
+    .feature-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .feature-card p {
+      color: var(--text2);
+      line-height: 1.6;
+      font-size: 14px;
+    }
+
+    /* ── Stats ── */
+    .stats-row {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 3rem 0;
+    }
+
+    .stat-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem 2.5rem;
+      border-radius: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(8px);
+      text-align: center;
+      min-width: 200px;
+    }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--accent2);
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-lbl {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      font-family: 'Syne', sans-serif;
+    }
+
+    /* ── How It Works ── */
+    .hiw-step {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .hiw-step:nth-child(even) {
+      flex-direction: row-reverse;
+    }
+
+    @media (max-width: 768px) {
+      .hiw-step, .hiw-step:nth-child(even) {
+        flex-direction: column;
+        text-align: center;
+      }
+    }
+
+    .hiw-content {
+      flex: 1;
+    }
+
+    .hiw-img {
+      flex: 1;
+      height: 300px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+    }
+
+    .step-num {
+      display: inline-block;
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+      text-align: center;
+      background: var(--accent2);
+      color: #fff;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-bottom: 1rem;
+    }
+
+    .hiw-content h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    .hiw-content p {
+      color: var(--text2);
+      line-height: 1.6;
+    }
+
+    /* ── Testimonials ── */
+    .testimonials {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .testimonial-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(12px);
+    }
+
+    .t-stars {
+      color: #fbbf24;
+      margin-bottom: 1rem;
+      font-size: 18px;
+    }
+
+    .t-quote {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.6;
+      font-style: italic;
+      margin-bottom: 1.5rem;
+    }
+
+    .t-author {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      color: var(--accent2);
+    }
+
+    .t-role {
+      font-size: 12px;
+      color: var(--text3);
+    }
+
+    /* ── FAQ ── */
+    .faq-grid {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .faq-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .faq-q {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 1.5rem;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .faq-chevron {
+      color: var(--text3);
+      transition: transform 0.3s;
+    }
+
+    .faq-card.open .faq-chevron {
+      transform: rotate(180deg);
+      color: var(--accent2);
+    }
+
+    .faq-a-wrapper {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .faq-a-inner {
+      padding: 0 1.5rem 1.25rem;
+      color: var(--text2);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 0;
+      margin-top: 5rem;
+    }
+
+    .footer-grid {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .footer-col h4 {
+      font-family: 'Syne', sans-serif;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+
+    .footer-col a {
+      display: block;
+      color: var(--text2);
+      text-decoration: none;
+      margin-bottom: 0.5rem;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    .footer-col a:hover {
+      color: var(--text);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text3);
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <header>
+      <div class="brand-row">
+        <div class="brand-icon">🤖</div>
+        <div class="brand-name">PrepEdge AI</div>
+      </div>
+      <div class="header-nav">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#how-it-works" class="nav-link">How it Works</a>
+        <a href="#faq" class="nav-link">FAQ</a>
+        <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+        {% if user %}
+          <a href="{{ url_for('app_page') }}" class="btn">Dashboard</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="btn">Sign In</a>
+        {% endif %}
+      </div>
+    </header>
+
+    <div class="hero">
+      <div class="hero-tag">
+        <div class="hero-dot"></div>AI-Powered Interview Coach
+      </div>
+      <h1>Ace Every Interview<br>With Confidence</h1>
+      <p>Upload your resume or pick a job title, and our AI will simulate a realistic interview experience complete with speech transcription, real-time feedback, and comprehensive scoring.</p>
+      <div class="hero-btns">
+        {% if user %}
+          <a href="{{ url_for('app_page') }}" class="btn">Go to Dashboard</a>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="btn">Try for Free</a>
+        {% endif %}
+        <a href="#how-it-works" class="btn btn-outline">Learn More</a>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-pill">
+        <div class="stat-num">50+</div>
+        <div class="stat-lbl">Job Roles Supported</div>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-num">100%</div>
+        <div class="stat-lbl">AI Evaluation</div>
+      </div>
+      <div class="stat-pill">
+        <div class="stat-num">24/7</div>
+        <div class="stat-lbl">Practice Anytime</div>
+      </div>
+    </div>
+
+    <div id="features" class="section">
+      <h2 class="section-title">Everything you need to succeed</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feat-icon-lg">📄</div>
+          <h3>ATS Resume Scanning</h3>
+          <p>Upload your resume to identify missing keywords, structure flaws, and automatically generate interview questions tailored strictly to your documented experience.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feat-icon-lg">🎤</div>
+          <h3>Live Mock Interviews</h3>
+          <p>Speak naturally using your microphone. Our advanced speech-to-text integration captures every word you say to evaluate your communication skills in real-time.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feat-icon-lg">📊</div>
+          <h3>In-depth Analytics</h3>
+          <p>Track your score over time, get personalized AI feedback on your weak points, and export detailed PDF reports of your complete interview sessions.</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="how-it-works" class="section">
+      <h2 class="section-title">How PrepEdge AI Works</h2>
+      
+      <div class="hiw-step">
+        <div class="hiw-content">
+          <div class="step-num">1</div>
+          <h3>Setup your scenario</h3>
+          <p>Select your target job title, experience level, and difficulty. Alternatively, upload your resume to have our AI analyze your profile and construct a perfectly customized interview session.</p>
+        </div>
+        <div class="hiw-img">🛠️</div>
+      </div>
+
+      <div class="hiw-step">
+        <div class="hiw-content">
+          <div class="step-num">2</div>
+          <h3>Answer out loud</h3>
+          <p>Read the AI-generated question and respond verbally. Practice structuring your thoughts and articulating your answers clearly under pressure, just like in a real interview.</p>
+        </div>
+        <div class="hiw-img">🎙️</div>
+      </div>
+
+      <div class="hiw-step">
+        <div class="hiw-content">
+          <div class="step-num">3</div>
+          <h3>Get instant feedback</h3>
+          <p>Once you finish speaking, the AI compares your answer against the ideal response. You'll receive a score out of 100 along with actionable tips to refine your delivery.</p>
+        </div>
+        <div class="hiw-img">📈</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2 class="section-title">Loved by candidates</h2>
+      <div class="testimonials">
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <div class="t-quote">"PrepEdge AI completely changed how I prepare. The mock interview felt surprisingly real and the feedback was spot on for a senior role."</div>
+          <div class="t-author">Sarah Jenkins</div>
+          <div class="t-role">Senior Software Engineer</div>
+        </div>
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <div class="t-quote">"I uploaded my resume and it asked me about the exact frameworks I listed. It really helped me polish my project explanations!"</div>
+          <div class="t-author">David Chen</div>
+          <div class="t-role">Data Analyst</div>
+        </div>
+        <div class="testimonial-card">
+          <div class="t-stars">★★★★★</div>
+          <div class="t-quote">"The real-time speech transcription forced me to stop saying 'um' so much. The PDF reports were great to review before the actual interview."</div>
+          <div class="t-author">Emily Rodriguez</div>
+          <div class="t-role">Product Manager</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="faq" class="section">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <div class="faq-grid">
+        <div class="faq-card">
+          <button class="faq-q" onclick="toggleFaqCard(this)">
+            <span class="faq-q-text">Is PrepEdge AI free to use?</span>
+            <span class="faq-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          <div class="faq-a-wrapper">
+            <div class="faq-a-inner">
+              Yes, registration is completely free. You can create an account and immediately start generating questions and practicing mock interviews.
+            </div>
+          </div>
+        </div>
+        
+        <div class="faq-card">
+          <button class="faq-q" onclick="toggleFaqCard(this)">
+            <span class="faq-q-text">What job roles are supported?</span>
+            <span class="faq-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          <div class="faq-a-wrapper">
+            <div class="faq-a-inner">
+              Our AI supports virtually any professional job role. From software engineering to marketing, finance, and healthcare, the AI dynamically generates relevant questions for the title you provide.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-card">
+          <button class="faq-q" onclick="toggleFaqCard(this)">
+            <span class="faq-q-text">Is my audio recorded or stored?</span>
+            <span class="faq-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          <div class="faq-a-wrapper">
+            <div class="faq-a-inner">
+              No. Your microphone input is processed in real-time via your browser's Speech Recognition API. We do not record, save, or store your voice audio. Only the transcribed text is saved to your history for scoring.
+            </div>
+          </div>
+        </div>
+
+        <div class="faq-card">
+          <button class="faq-q" onclick="toggleFaqCard(this)">
+            <span class="faq-q-text">I forgot my password or my account is blocked. What should I do?</span>
+            <span class="faq-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          <div class="faq-a-wrapper">
+            <div class="faq-a-inner">
+              You can click "Forgot Password" on the login page. If you are blocked, you can use the "Contact Admin" link on the login page to submit an unblock request.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-grid">
+        <div class="footer-col" style="max-width: 300px;">
+          <div class="brand-row" style="margin-bottom: 1rem;">
+            <div class="brand-icon" style="width:32px; height:32px; font-size:14px;">🤖</div>
+            <div class="brand-name" style="font-size: 1rem;">PrepEdge AI</div>
+          </div>
+          <p style="color: var(--text3); font-size: 13px; line-height: 1.6;">Your intelligent partner for interview preparation, helping you succeed with confidence.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Platform</h4>
+          <a href="{{ url_for('login') }}">Sign In</a>
+          <a href="{{ url_for('register') }}">Create Account</a>
+          <a href="#features">Features</a>
+        </div>
+        <div class="footer-col">
+          <h4>Support</h4>
+          <a href="{{ url_for('login') }}">Contact Admin</a>
+          <a href="#faq">FAQ</a>
+          <a href="{{ url_for('login') }}">Forgot Password</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        &copy; 2026 PrepEdge AI. All rights reserved.
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    /* Theme Toggle */
+    (function () {
+      const t = localStorage.getItem('prepedge-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+      const btn = document.getElementById('theme-btn');
+      if (btn) btn.textContent = t === 'light' ? '☀️' : '🌙';
+    })();
+    
+    function toggleTheme() {
+      const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('prepedge-theme', next);
+      const btn = document.getElementById('theme-btn');
+      if (btn) btn.textContent = next === 'light' ? '☀️' : '🌙';
+    }
+
+    /* FAQ Toggle */
+    function toggleFaqCard(btn) {
+      const card = btn.parentElement;
+      const wrapper = card.querySelector('.faq-a-wrapper');
+      const isOpen = card.classList.contains('open');
+
+      document.querySelectorAll('.faq-card.open').forEach(c => {
+        c.classList.remove('open');
+        c.querySelector('.faq-a-wrapper').style.maxHeight = null;
+      });
+
+      if (!isOpen) {
+        card.classList.add('open');
+        wrapper.style.maxHeight = wrapper.scrollHeight + "px";
+      }
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+# Environment / Secrets
+.env
+_env
+.env.local
+.env.*
+
+# Python Cache & Build
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+ENV/
+env/
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# Output / Temp Reports
+report_images/
+*.log

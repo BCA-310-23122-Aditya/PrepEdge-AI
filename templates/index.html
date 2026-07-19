@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PrepEdgeAI — Smart Interview Prep</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+</head>
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<body>
+
+  <!-- ══ ANIMATED BACKGROUND ══════════════════════════════════ -->
+  <canvas id="particle-canvas"></canvas>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <!-- ══ HEADER ════════════════════════════════════════════════ -->
+  <header>
+    <div class="logo-wrap">
+      <div class="logo-icon">🤖</div>
+      <div class="logo">PrepEdge<span>AI</span></div>
+    </div>
+    <div class="header-right">
+      <div class="ai-badge">
+        <div class="ai-dot"></div>AI Powered
+      </div>
+      {% if user %}
+      <div class="profile-dropdown" id="profile-dropdown">
+        <div class="profile-trigger" id="profile-trigger">
+          {% if user.avatar_url %}
+          <img src="{{ user.avatar_url }}" alt="{{ user.username }}" class="user-avatar-img" id="header-avatar">
+          {% else %}
+          <span class="user-avatar" id="header-avatar">{{ user.username[0].upper() }}</span>
+          {% endif %}
+          <span class="user-name">{{ user.username }}</span>
+          <span class="dropdown-arrow">▼</span>
+        </div>
+        <ul class="dropdown-menu" id="dropdown-menu">
+          <li><button class="dropdown-item" data-action="edit-profile">✎ Edit Profile</button></li>
+          <li><button class="dropdown-item" data-action="session-history">📋 Session History</button></li>
+          <li><button class="dropdown-item" data-action="dashboard">📊 Dashboard</button></li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+          <li><button class="dropdown-item" data-action="delete-account" style="color:var(--red)">🗑 Delete
+              Account</button></li>
+          <li><button class="dropdown-item" data-action="logout">⏻ Logout</button></li>
+        </ul>
+      </div>
+      {% endif %}
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode">🌙</button>
+    </div>
+  </header>
+
+  <div class="hero">
+    <h1>AI Interview Assistant</h1>
+    <p>Generate questions, practice interviews, and improve instantly with AI</p>
+  </div>
+
+  <div class="container">
+    <div class="grid">
+
+      <!-- ══ SIDEBAR ════════════════════════════════════════════ -->
+      <div style="display:flex;flex-direction:column;gap:14px;position:sticky;top:84px">
+
+        <div class="card form-card">
+          <div class="card-title">
+            <div class="card-title-icon">✨</div>
+            Generate Questions
+          </div>
+
+          <!-- ── Mode Tabs ── -->
+          <div class="prep-tabs" id="prep-tabs">
+            <button class="prep-tab active" onclick="switchPrepTab('job')" id="tab-job">💼 Job Title</button>
+            <button class="prep-tab" onclick="switchPrepTab('resume')" id="tab-resume">📄 Upload Resume</button>
+          </div>
+
+          <!-- ── Job Title Panel ── -->
+          <div id="prep-panel-job">
+            <div class="field">
+              <label><span class="field-icon">💼</span> Job Title / Role</label>
+              <input type="text" id="job_title" placeholder="e.g. Python Developer, Data Analyst" />
+              <div id="job-title-warning"></div>
+            </div>
+
+            <div class="field">
+              <label><span class="field-icon">📈</span> Experience Level</label>
+              <select id="experience">
+                <option value="fresher">🌱 Fresher (0–1 yr)</option>
+                <option value="junior">🔰 Junior (1–3 yrs)</option>
+                <option value="mid-level" selected>⭐ Mid-level (3–5 yrs)</option>
+                <option value="senior">🏆 Senior (5+ yrs)</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label><span class="field-icon">📂</span> Category</label>
+              <select id="category">
+                <option value="all">🔀 All categories</option>
+                <option value="technical">⚙️ Technical only</option>
+                <option value="behavioral">🧠 Behavioral only</option>
+                <option value="situational">💬 Situational only</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label><span class="field-icon">🎯</span> Difficulty</label>
+              <select id="difficulty">
+                <option value="mixed">🔀 Mixed</option>
+                <option value="easy">🟢 Easy</option>
+                <option value="medium">🟡 Medium</option>
+                <option value="hard">🔴 Hard</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label><span class="field-icon">🔢</span> Number of Questions</label>
+              <select id="num_questions">
+                <option value="5">5 questions</option>
+                <option value="10" selected>10 questions</option>
+                <option value="15">15 questions</option>
+                <option value="20">20 questions</option>
+              </select>
+            </div>
+
+            <button class="btn-generate" id="gen-btn" onclick="generateQuestions()">
+              <span>✨</span> Generate Questions
+            </button>
+          </div>
+
+          <!-- ── Resume Panel ── -->
+          <div id="prep-panel-resume" style="display:none">
+
+            <!-- Dropzone -->
+            <div class="resume-dropzone" id="resume-dropzone"
+              onclick="document.getElementById('resume-file-input').click()" ondragover="resumeDragOver(event)"
+              ondragleave="resumeDragLeave(event)" ondrop="resumeDrop(event)">
+              <div class="rz-icon">📄</div>
+              <div class="rz-title">Drop your resume here</div>
+              <div class="rz-sub">PDF or DOCX · Max 5 MB</div>
+              <button class="rz-btn" type="button"
+                onclick="event.stopPropagation();document.getElementById('resume-file-input').click()">Browse
+                File</button>
+              <input type="file" id="resume-file-input" accept=".pdf,.docx,.doc" style="display:none"
+                onchange="onResumeFileSelected(this)" />
+            </div>
+
+            <!-- Upload status -->
+            <div id="resume-upload-status" style="display:none" class="resume-status-bar">
+              <div class="rsb-file" id="rsb-file-name">resume.pdf</div>
+              <div class="rsb-progress-wrap">
+                <div class="rsb-progress" id="rsb-progress"></div>
+              </div>
+              <div class="rsb-label" id="rsb-label">Uploading…</div>
+            </div>
+
+            <!-- ATS result panel (shown after upload) -->
+            <div id="ats-result-panel" style="display:none">
+              <!-- Detected role + target role override -->
+              <div class="field" style="margin-top:.75rem">
+                <label><span class="field-icon">🎯</span> Target Role</label>
+                <input type="text" id="resume-target-role" placeholder="Detected automatically — or type to override" />
+                <div style="font-size:11px;color:var(--text3);margin-top:4px" id="detected-role-hint"></div>
+              </div>
+
+              <!-- ATS Score card -->
+              <div class="ats-score-card" id="ats-score-card">
+                <div class="ats-score-header">
+                  <div>
+                    <div class="ats-grade" id="ats-grade">—</div>
+                    <div class="ats-label">ATS Score</div>
+                  </div>
+                  <div class="ats-circle-wrap">
+                    <svg class="ats-circle" viewBox="0 0 44 44">
+                      <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="4" />
+                      <circle id="ats-arc" cx="22" cy="22" r="18" fill="none" stroke="#7b68ee" stroke-width="4"
+                        stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="113"
+                        transform="rotate(-90 22 22)" style="transition:stroke-dashoffset .8s ease" />
+                    </svg>
+                    <div class="ats-circle-num" id="ats-score-num">0</div>
+                  </div>
+                </div>
+                <!-- Sub-score bars -->
+                <div class="ats-sub-scores" id="ats-sub-scores"></div>
+              </div>
+
+              <!-- Strengths / Weaknesses / Suggestions -->
+              <div class="ats-section-tabs">
+                <button class="ats-stab active" onclick="switchAtsTab('strengths',this)">✅ Strengths</button>
+                <button class="ats-stab" onclick="switchAtsTab('weaknesses',this)">⚠️ Issues</button>
+                <button class="ats-stab" onclick="switchAtsTab('suggestions',this)">💡 Tips</button>
+              </div>
+              <div id="ats-tab-strengths" class="ats-tab-content"></div>
+              <div id="ats-tab-weaknesses" class="ats-tab-content" style="display:none"></div>
+              <div id="ats-tab-suggestions" class="ats-tab-content" style="display:none"></div>
+
+              <!-- Experience for resume mode -->
+              <div class="field" style="margin-top:.75rem">
+                <label><span class="field-icon">📈</span> Experience Level</label>
+                <select id="resume-experience">
+                  <option value="fresher">🌱 Fresher (0–1 yr)</option>
+                  <option value="junior">🔰 Junior (1–3 yrs)</option>
+                  <option value="mid-level" selected>⭐ Mid-level (3–5 yrs)</option>
+                  <option value="senior">🏆 Senior (5+ yrs)</option>
+                </select>
+              </div>
+
+              <!-- Additional Options for Resume Mode -->
+              <div class="field">
+                <label><span class="field-icon">📂</span> Category</label>
+                <select id="resume-category">
+                  <option value="all">🔀 All categories</option>
+                  <option value="technical">⚙️ Technical only</option>
+                  <option value="behavioral">🧠 Behavioral only</option>
+                  <option value="situational">💬 Situational only</option>
+                </select>
+              </div>
+              <div class="field">
+                <label><span class="field-icon">🎯</span> Difficulty</label>
+                <select id="resume-difficulty">
+                  <option value="mixed">🔀 Mixed</option>
+                  <option value="easy">🟢 Easy</option>
+                  <option value="medium">🟡 Medium</option>
+                  <option value="hard">🔴 Hard</option>
+                </select>
+              </div>
+              <div class="field">
+                <label><span class="field-icon">🔢</span> Number of Questions</label>
+                <select id="resume-num_questions">
+                  <option value="5">5 questions</option>
+                  <option value="10" selected>10 questions</option>
+                  <option value="15">15 questions</option>
+                  <option value="20">20 questions</option>
+                </select>
+              </div>
+              <button class="btn-generate" id="resume-gen-btn" onclick="generateFromResume()" style="margin-top:.5rem">
+                <span>🎤</span> Generate Interview Questions
+              </button>
+            </div>
+
+            <!-- Resume spinner (upload+parse) -->
+            <div id="resume-spinner" style="display:none;text-align:center;padding:1.5rem 0">
+              <div class="spin-ring" style="margin:0 auto .75rem"></div>
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--accent2)"
+                id="resume-spinner-label">Analysing resume…</div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="card tips-card">
+          <div class="card-title">
+            <div class="card-title-icon">💡</div>Pro Tips
+          </div>
+          <div class="tip-item">
+            <div class="tip-dot">🎯</div><span>Be specific — <em>"React.js Frontend Developer"</em> beats
+              <em>"Developer"</em></span>
+          </div>
+          <div class="tip-item">
+            <div class="tip-dot">🎤</div><span>In Mock Interview, click <strong>▶ Start</strong> then speak your answer
+              clearly</span>
+          </div>
+          <div class="tip-item">
+            <div class="tip-dot">🤖</div><span>AI evaluates your spoken answer and gives instant feedback</span>
+          </div>
+          <div class="tip-item">
+            <div class="tip-dot">⭐</div><span>Rate questions to track which ones you find most useful</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ══ RESULTS PANEL ══════════════════════════════════════ -->
+      <div>
+
+        <!-- Empty state -->
+        <div id="empty-state" class="empty-state">
+          <div class="empty-icon">🎯</div>
+          <div class="empty-title">Ready to ace your interview?</div>
+          <div class="empty-sub">Choose your role, experience level, and preferences<br>then click Generate Questions to
+            get started.</div>
+          <div class="empty-steps">
+            <div class="empty-step">
+              <div class="step-num">1</div>
+              <div class="step-txt">Enter Role</div>
+            </div>
+            <div class="empty-step">
+              <div class="step-num">2</div>
+              <div class="step-txt">Set Options</div>
+            </div>
+            <div class="empty-step">
+              <div class="step-num">3</div>
+              <div class="step-txt">Generate</div>
+            </div>
+            <div class="empty-step">
+              <div class="step-num">4</div>
+              <div class="step-txt">Practice</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Spinner -->
+        <div class="spinner" id="spinner">
+          <div class="spin-ring"></div>
+          <div style="text-align:center">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--accent2)">Generating
+              Questions…</div>
+            <div class="spin-label">Be Patient, AI is crafting your personalized interview set</div>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div id="results-area">
+          <div id="normal-view">
+
+            <!-- Results header -->
+            <div class="results-header">
+              <div>
+                <div class="results-title" id="results-title"></div>
+                <div class="results-meta" id="results-meta"></div>
+              </div>
+              <div class="action-btns">
+                <button class="action-btn primary-action" onclick="startMockInterview()">🎤 Mock Interview</button>
+                <button class="action-btn" onclick="copyAll()">📋 Copy all</button>
+                <button class="action-btn" onclick="exportTxt()">⬇️ Download .txt</button>
+                <button class="action-btn" onclick="exportPdf()">📄 PDF Report</button>
+                <button class="action-btn" onclick="openEmailModal()">📧 Email Report</button>
+                <button class="action-btn" onclick="regenerateQuestions()">🔄 Regenerate</button>
+              </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="stats-row" id="stats-row"></div>
+
+            <!-- Filter chips -->
+            <div class="filter-row">
+              <button class="filter-chip active" onclick="filterBy('all',this)">All</button>
+              <button class="filter-chip" onclick="filterBy('technical',this)">⚙️ Technical</button>
+              <button class="filter-chip" onclick="filterBy('behavioral',this)">🧠 Behavioral</button>
+              <button class="filter-chip" onclick="filterBy('situational',this)">💬 Situational</button>
+              <button class="filter-chip" onclick="filterBy('easy',this)">🟢 Easy</button>
+              <button class="filter-chip" onclick="filterBy('medium',this)">🟡 Medium</button>
+              <button class="filter-chip" onclick="filterBy('hard',this)">🔴 Hard</button>
+            </div>
+
+            <div id="questions-list"></div>
+          </div>
+
+          <!-- ══ MOCK INTERVIEW ════════════════════════════════ -->
+          <div id="mock-mode">
+            <div class="mock-wrap">
+
+              <div class="mock-header">
+                <div class="mock-progress-meta">
+                  <div class="mock-counter" id="mock-counter">Question 1 of 10</div>
+                  <div class="mock-q-bar">
+                    <div class="mock-q-fill" id="mock-q-fill" style="width:10%"></div>
+                  </div>
+                </div>
+                <button class="btn-exit-mock" onclick="exitMock()">✕ Exit Interview</button>
+              </div>
+
+              <div class="mock-question-box" id="mock-question"></div>
+
+              <!-- Screen 1: Ready -->
+              <div id="mock-screen-ready">
+                <div class="ready-visual">🎤</div>
+                <div class="ready-msg">
+                  Click <strong>▶ Start Answering</strong> when you're ready.<br>
+                  A 1-minute timer will begin and your voice will be transcribed live.<br>
+                  <span style="color:var(--accent2);font-weight:600">AI will evaluate your answer instantly.</span>
+                </div>
+                <button class="btn-start-ans" onclick="mockStart()">▶ Start Answering</button>
+              </div>
+
+              <!-- Screen 2: Answering -->
+              <div id="mock-screen-answering" style="display:none">
+                <div class="mic-panel">
+                  <div class="mic-orb-wrap">
+                    <div class="mic-orb-ring ring-3"></div>
+                    <div class="mic-orb-ring ring-2"></div>
+                    <div class="mic-orb-ring ring-1"></div>
+                    <div class="mic-orb" id="mic-orb">
+                      <span class="mic-icon">🎙️</span>
+                    </div>
+                  </div>
+
+                  <div class="mic-timer-row">
+                    <div class="mic-timer" id="mic-timer">1:00</div>
+                  </div>
+                  <div class="mic-status-label" id="mic-status-label">
+                    <span class="mic-live-dot"></span> Listening…
+                  </div>
+
+                  <div class="waveform" id="waveform">
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                  </div>
+                </div>
+
+                <div class="transcript-panel">
+                  <div class="transcript-panel-header">
+                    <span class="transcript-panel-title">🤖 AI Transcript</span>
+                    <span class="transcript-word-count" id="word-count">0 words</span>
+                  </div>
+                  <div class="transcript-box" id="transcript-box">
+                    <span class="transcript-placeholder">Start speaking — your words will appear here in real
+                      time…</span>
+                  </div>
+                </div>
+
+                <div class="answer-btns">
+                  <button class="btn-skip" onclick="mockSkip()">⏭ Skip</button>
+                  <button class="btn-done" onclick="mockDoneAnswering()">✓ Done Answering</button>
+                </div>
+              </div>
+
+              <!-- Screen 3: Evaluating -->
+              <div id="mock-screen-evaluating" style="display:none">
+                <div class="eval-ring"></div>
+                <div class="eval-title">AI is evaluating your answer…</div>
+                <div class="eval-sub">Checking accuracy, completeness & clarity</div>
+              </div>
+
+              <!-- Screen 4: Feedback -->
+              <div id="mock-screen-feedback" style="display:none">
+                <div class="score-row">
+                  <div id="score-badge" class="score-badge"></div>
+                  <div class="pct-label" id="pct-label"></div>
+                </div>
+                <div class="pct-wrap">
+                  <div class="pct-bar" id="pct-bar"></div>
+                </div>
+                <div class="fb-box" id="fb-text"></div>
+                <div class="fb-tip" id="fb-tip"></div>
+                <button class="show-ideal-btn" id="toggle-ideal-btn" onclick="toggleIdeal()">🧠 Show Ideal
+                  Answer</button>
+                <div class="ideal-answer-box" id="ideal-answer-box" style="display:none;"></div>
+                <button class="show-ideal-btn" id="toggle-spoken-btn" onclick="toggleSpoken()">▶ 🔎 Show what you
+                  said</button>
+                <div class="spoken-box" id="spoken-box"></div>
+                <div class="fb-btns">
+                  <button class="btn-skip" onclick="exitMock()">✕ Exit</button>
+                  <button class="btn-next-q" id="btn-next-q" onclick="mockNextQuestion()">Next Question →</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- ════════════════════════════════════════════════════ -->
+          <div class="chart-card">
+            <canvas id="performanceChart"></canvas>
+          </div>
+          <div class="insights-card">
+            <h3>🧠 AI Insights</h3>
+            <p id="insight-text">No data yet</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ FAQ SECTION ═════════════════════════════════════════ -->
+    <div class="faq-container" id="faq-section">
+      <div class="faq-header">
+        <div class="faq-icon-wrap">❓</div>
+        <h2>Frequently Asked Questions</h2>
+        <p class="faq-sub">Everything you need to know about PrepEdge AI</p>
+      </div>
+
+      <div class="faq-grid">
+        <!-- Q1 -->
+        <div class="faq-card">
+          <button class="faq-q" onclick="toggleFaqCard(this)">
+            <span class="faq-q-text">What happens when I click Generate Questions?</span>
+            <span class="faq-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          <div class="faq-a-wrapper">
+            <div class="faq-a-inner">
+              Our AI engine will instantly build a custom interview session for you. If you selected a Job Title, it curates questions based on the role, experience level, and category. If you uploaded a Resume, it extracts your specific skills and past experiences to challenge you just like a real recruiter would.
+            </div>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="faq-card">
+          <button class="faq-q" onclick="toggleFaqCard(this)">
+            <span class="faq-q-text">How do Experience Level and Difficulty affect questions?</span>
+            <span class="faq-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          <div class="faq-a-wrapper">
+            <div class="faq-a-inner">
+              Experience Level (e.g., Fresher vs Senior) changes the focus—freshers get more foundational and theoretical questions, while seniors get architecture and leadership scenarios. Difficulty (Easy to Hard) scales the depth and complexity expected in your answers for those topics.
+            </div>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="faq-card">
+          <button class="faq-q" onclick="toggleFaqCard(this)">
+            <span class="faq-q-text">How does the Mock Interview work with these questions?</span>
+            <span class="faq-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          <div class="faq-a-wrapper">
+            <div class="faq-a-inner">
+              Once generated, click "Start Mock Interview." You'll be prompted to answer each question aloud using your microphone. The system transcribes your speech in real-time, then our AI evaluates your answer against the ideal response.
+            </div>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="faq-card">
+          <button class="faq-q" onclick="toggleFaqCard(this)">
+            <span class="faq-q-text">What are Hints and how do they affect scoring?</span>
+            <span class="faq-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          <div class="faq-a-wrapper">
+            <div class="faq-a-inner">
+              If you get stuck, you can click to reveal a Hint. The hint will guide you toward the ideal answer framework, but using it may slightly reduce your maximum possible AI score for that specific question.
+            </div>
+          </div>
+        </div>
+
+        <!-- Q5 -->
+        <div class="faq-card">
+          <button class="faq-q" onclick="toggleFaqCard(this)">
+            <span class="faq-q-text">Where can I see my scores and reports?</span>
+            <span class="faq-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          <div class="faq-a-wrapper">
+            <div class="faq-a-inner">
+              After answering, you'll see instant feedback, a score out of 100, and areas for improvement. You can review all past sessions, track your performance over time, and export full PDF reports from the Session History and Dashboard tabs.
+            </div>
+          </div>
+        </div>
+
+        <!-- Q6 -->
+        <div class="faq-card">
+          <button class="faq-q" onclick="toggleFaqCard(this)">
+            <span class="faq-q-text">How does the Resume Upload & ATS Analysis work?</span>
+            <span class="faq-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          <div class="faq-a-wrapper">
+            <div class="faq-a-inner">
+              Upload your PDF or DOCX resume and our AI will automatically detect your target role, analyze your resume against ATS (Applicant Tracking System) criteria, and generate a detailed score with sub-scores for structure, keywords, readability, completeness, and role match. Interview questions are then tailored directly to your resume content and skills.
+            </div>
+          </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="faq-card">
+          <button class="faq-q" onclick="toggleFaqCard(this)">
+            <span class="faq-q-text">How accurate is the AI evaluation of my answers?</span>
+            <span class="faq-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          <div class="faq-a-wrapper">
+            <div class="faq-a-inner">
+              Our AI uses advanced language models to evaluate your spoken answers against ideal responses. It checks for accuracy, completeness, clarity, and relevance. While no AI is perfect, the feedback is designed to mirror what a real interviewer would look for — focusing on key concepts, structure, and communication quality.
+            </div>
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="faq-card">
+          <button class="faq-q" onclick="toggleFaqCard(this)">
+            <span class="faq-q-text">Is my data private and secure?</span>
+            <span class="faq-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          <div class="faq-a-wrapper">
+            <div class="faq-a-inner">
+              Absolutely. Your resume data, session history, and transcripts are stored securely in your account and are never shared with third parties. You can delete your account and all associated data at any time from your profile settings. Voice recordings are processed in real-time and are not stored after transcription.
+            </div>
+          </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="faq-card">
+          <button class="faq-q" onclick="toggleFaqCard(this)">
+            <span class="faq-q-text">What job roles and industries are supported?</span>
+            <span class="faq-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          <div class="faq-a-wrapper">
+            <div class="faq-a-inner">
+              PrepEdge AI supports virtually any job role — from Software Developer, Data Analyst, and DevOps Engineer to Marketing Manager, Product Designer, and HR Specialist. The more specific your job title (e.g., "React.js Frontend Developer" instead of just "Developer"), the more tailored and relevant your questions will be.
+            </div>
+          </div>
+        </div>
+
+        <!-- Q10 -->
+        <div class="faq-card">
+          <button class="faq-q" onclick="toggleFaqCard(this)">
+            <span class="faq-q-text">How can I improve my mock interview scores?</span>
+            <span class="faq-chevron">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </span>
+          </button>
+          <div class="faq-a-wrapper">
+            <div class="faq-a-inner">
+              Focus on structuring your answers clearly — start with a brief overview, then dive into details with real examples. Speak at a moderate pace to ensure accurate transcription. Review the "Ideal Answer" after each question to understand what was expected, and use the AI feedback to identify your weak areas. Regular practice with different difficulty levels will significantly boost your scores over time.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ HISTORY MODAL ═════════════════════════════════════════ -->
+  <div id="history-modal">
+    <div class="modal-box">
+      <div class="modal-title">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div
+            style="width:36px;height:36px;background:rgba(123,104,238,.15);border:1px solid rgba(123,104,238,.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">
+            📋</div>
+          Session History
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button class="btn-clear-hist" onclick="clearAllHistory()">🗑 Clear all</button>
+          <button class="modal-close" onclick="closeHistory()">×</button>
+        </div>
+      </div>
+      <div id="history-list"></div>
+    </div>
+  </div>
+
+  <!-- ══ EMAIL REPORT MODAL ════════════════════════════════════ -->
+  <div id="email-modal"
+    style="display:none;position:fixed;inset:0;background:rgba(7,8,15,.85);backdrop-filter:blur(16px);z-index:300;align-items:center;justify-content:center">
+    <div
+      style="background:rgba(14,15,28,.97);border:1px solid rgba(123,104,238,.2);border-radius:22px;padding:2rem;width:90%;max-width:440px;box-shadow:0 40px 80px rgba(0,0,0,.6);animation:modalIn .3s cubic-bezier(.34,1.56,.64,1)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem">
+        <div
+          style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:var(--text);display:flex;align-items:center;gap:8px">
+          <span
+            style="width:32px;height:32px;background:rgba(123,104,238,.2);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px">📧</span>
+          Email Session Report
+        </div>
+        <button onclick="closeEmailModal()"
+          style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);width:30px;height:30px;border-radius:8px;font-size:16px;color:var(--text2);cursor:pointer">×</button>
+      </div>
+      <p style="font-size:13px;color:var(--text2);margin-bottom:1.25rem;line-height:1.6">
+        Send a full formatted report of this session — questions, categories, difficulties, and your mock interview
+        scores — directly to your email.
+      </p>
+      <div style="margin-bottom:1rem">
+        <label
+          style="display:block;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;font-family:'Syne',sans-serif">Email
+          Address</label>
+        <input type="email" id="email-input" placeholder="Loading your email…"
+          style="width:100%;padding:11px 14px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:11px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none"
+          onkeydown="if(event.key==='Enter')sendEmailReport()" />
+      </div>
+      <div id="email-status" style="font-size:13px;margin-bottom:.75rem;min-height:18px"></div>
+      <div style="display:flex;gap:10px">
+        <button onclick="closeEmailModal()"
+          style="flex:1;padding:11px;border-radius:10px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">Cancel</button>
+        <button id="email-send-btn" onclick="sendEmailReport()"
+          style="flex:2;padding:11px;border:none;border-radius:10px;background:linear-gradient(135deg,#7b68ee,#a78bfa);color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 16px rgba(123,104,238,.4)">📧
+          Send Report</button>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:.75rem;text-align:center">Requires SMTP_USER &amp;
+        SMTP_PASS in your .env file.</p>
+    </div>
+  </div>
+
+  <!-- ══ PROFILE EDIT MODAL ════════════════════════════════════ -->
+  <div id="profile-modal" class="pm-overlay">
+    <div class="pm-box">
+      <div class="pm-header">
+        <div class="pm-title">
+          <div
+            style="width:36px;height:36px;background:linear-gradient(135deg,#7b68ee,#a78bfa);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">
+            👤</div>
+          Edit Profile
+        </div>
+        <button class="pm-close" onclick="closeProfileModal()" aria-label="Close">×</button>
+      </div>
+
+      <div class="pm-avatar-wrap">
+        <div class="pm-avatar-container" onclick="triggerAvatarUpload()" title="Click to change profile picture">
+          <div id="profile-avatar-big" class="pm-avatar-big">?</div>
+          <div class="avatar-hover-overlay">📷</div>
+        </div>
+        <input type="file" id="profile-avatar-input" accept="image/*" style="display:none" onchange="uploadAvatar()">
+        <div class="pm-avatar-hint">Click to change photo</div>
+      </div>
+
+      <div class="pm-fields">
+        <div class="pm-field">
+          <label>Username</label>
+          <input type="text" id="prof-username" placeholder="New username" autocomplete="username" />
+        </div>
+        <div class="pm-field">
+          <label>Email</label>
+          <input type="email" id="prof-email" placeholder="New email" autocomplete="email" />
+        </div>
+        <div class="pm-field pm-divider">
+          <label>Current Password <span style="color:var(--red)">*</span></label>
+          <div class="pw-field-wrap">
+            <input type="password" id="prof-current-pw" placeholder="Required to save changes"
+              autocomplete="current-password" />
+          </div>
+        </div>
+        <div class="pm-field">
+          <label>New Password <span style="color:var(--text3);font-weight:400;text-transform:none;font-size:10px">(leave
+              blank to keep current)</span></label>
+          <div class="pw-field-wrap">
+            <input type="password" id="prof-new-pw" placeholder="Min 8 chars, upper, lower, digit, special"
+              autocomplete="new-password" />
+          </div>
+        </div>
+      </div>
+
+      <div id="profile-status" class="pm-status"></div>
+
+      <div class="pm-actions">
+        <button class="pm-btn-cancel" onclick="closeProfileModal()">Cancel</button>
+        <button id="prof-save-btn" class="pm-btn-save" onclick="saveProfile()">💾 Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ LOGOUT CONFIRMATION MODAL ══════════════════════════════ -->
+  <div id="logout-modal" class="confirm-overlay">
+    <div class="confirm-box">
+      <div class="confirm-icon confirm-icon-warn">⏻</div>
+      <h2 class="confirm-title">Log Out?</h2>
+      <p class="confirm-sub">You'll need to sign in again to access your sessions and practice history.</p>
+      <div class="confirm-actions">
+        <button class="confirm-btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+        <button class="confirm-btn-ok confirm-btn-warn" onclick="confirmLogout()">Yes, Log Out</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ DELETE ACCOUNT MODAL ═══════════════════════════════════ -->
+  <div id="delete-account-modal" class="confirm-overlay">
+    <div class="confirm-box confirm-box-wide">
+      <div class="confirm-icon confirm-icon-danger">🗑</div>
+      <h2 class="confirm-title">Delete Your Account?</h2>
+      <p class="confirm-sub" style="color:var(--red)">
+        ⚠️ This is permanent and cannot be undone. All your sessions, history, and data will be erased.
+      </p>
+
+      <div class="da-reasons-label">Why are you leaving? <span
+          style="color:var(--red);font-weight:400">*</span></div>
+      <div class="da-reasons">
+        <label class="da-reason"><input type="radio" name="da_reason" value="no_longer_need"> I no longer need this account</label>
+        <label class="da-reason"><input type="radio" name="da_reason" value="created_another"> I created another account</label>
+        <label class="da-reason"><input type="radio" name="da_reason" value="privacy"> Privacy concerns</label>
+        <label class="da-reason"><input type="radio" name="da_reason" value="too_many_emails"> Too many emails / notifications</label>
+        <label class="da-reason"><input type="radio" name="da_reason" value="difficulty"> Difficulty using the platform</label>
+        <label class="da-reason"><input type="radio" name="da_reason" value="other"> Other</label>
+      </div>
+
+      <textarea id="da-comment" class="da-textarea" placeholder="Any additional comments… (optional)" rows="2"
+        maxlength="400"></textarea>
+
+      <div id="da-status" class="confirm-status"></div>
+
+      <div class="confirm-actions">
+        <button class="confirm-btn-cancel" onclick="closeDeleteAccountModal()">Cancel</button>
+        <button class="confirm-btn-ok confirm-btn-danger" id="da-confirm-btn" onclick="submitDeleteAccount()">🗑 Delete
+          My Account</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GENERIC CONFIRMATION MODAL ═════════════════════════════ -->
+  <div id="generic-confirm-modal" class="confirm-overlay" style="display:none">
+    <div class="confirm-box">
+      <div class="confirm-icon confirm-icon-warn" id="gcm-icon">⚠️</div>
+      <h2 class="confirm-title" id="gcm-title">Are you sure?</h2>
+      <p class="confirm-sub" id="gcm-text">This action cannot be undone.</p>
+      <div class="confirm-actions">
+        <button class="confirm-btn-cancel" onclick="closeGenericConfirm()">Cancel</button>
+        <button class="confirm-btn-ok confirm-btn-warn" id="gcm-ok-btn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast">✓ Done</div>
+
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+
+  <!-- Theme init — runs before paint to prevent flash -->
+  <script>
+    (function () {
+      const saved = localStorage.getItem('prepedge-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', saved);
+      const btn = document.getElementById('theme-toggle');
+      if (btn) btn.textContent = saved === 'light' ? '☀️' : '🌙';
+    })();
+  </script>
+</body>
+
+</html>

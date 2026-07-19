@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — PrepEdge AI</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #07080f;
+      --card-bg: rgba(255, 255, 255, .04);
+      --border: rgba(123, 104, 238, .2);
+      --text: #e8eaf6;
+      --text2: #9ba3c2;
+      --text3: #555e82;
+      --accent: #7b68ee;
+      --accent2: #a78bfa;
+      --cyan: #22d3ee;
+      --green: #34d399;
+      --red: #f87171;
+      --input-bg: rgba(255, 255, 255, .05);
+      --input-border: rgba(255, 255, 255, .09);
+      --surface: rgba(255, 255, 255, .04);
+    }
+
+    [data-theme="light"] {
+      --bg: #f5f4f0;
+      --card-bg: rgba(255, 255, 255, .94);
+      --border: rgba(79, 70, 229, .2);
+      --text: #1a1523;
+      --text2: #4b4569;
+      --text3: #8b85a0;
+      --accent: #4f46e5;
+      --accent2: #6d28d9;
+      --cyan: #0891b2;
+      --green: #059669;
+      --red: #dc2626;
+      --input-bg: rgba(255, 255, 255, .85);
+      --input-border: rgba(0, 0, 0, .12);
+      --surface: rgba(79, 70, 229, .05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      transition: background .3s, color .3s;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 70% at 80% 10%, rgba(167, 139, 250, .18) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 10% 80%, rgba(34, 211, 238, .1) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 60% at 50% 50%, rgba(123, 104, 238, .06) 0%, transparent 60%),
+        linear-gradient(160deg, #07080f 0%, #0a0c1a 50%, #07080f 100%);
+      animation: aur 18s ease-in-out infinite alternate;
+    }
+
+    [data-theme="light"] body::before {
+      background: radial-gradient(ellipse 80% 70% at 80% 10%, rgba(99, 102, 241, .1) 0%, transparent 60%),
+        linear-gradient(160deg, #f5f4f0 0%, #edecea 50%, #f5f4f0 100%);
+      animation: none;
+    }
+
+    @keyframes aur {
+      0% {
+        opacity: 1
+      }
+
+      100% {
+        opacity: .8
+      }
+    }
+
+    /* ── Layout ── */
+    .page-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media(max-width:860px) {
+      .page-wrap {
+        grid-template-columns: 1fr
+      }
+    }
+
+    /* ── Theme toggle ── */
+    .theme-btn {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 200;
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(12px);
+      transition: all .2s;
+    }
+
+    .theme-btn:hover {
+      transform: scale(1.08)
+    }
+
+    /* ── Hero side ── */
+    .hero-side {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4rem 3.5rem;
+      background: linear-gradient(135deg, rgba(123, 104, 238, .08) 0%, rgba(34, 211, 238, .05) 100%);
+      border-right: 1px solid rgba(123, 104, 238, .1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    [data-theme="light"] .hero-side {
+      background: linear-gradient(135deg, rgba(79, 70, 229, .06) 0%, rgba(8, 145, 178, .04) 100%);
+      border-right-color: rgba(79, 70, 229, .1)
+    }
+
+    .hero-side::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 20% 30%, rgba(123, 104, 238, .12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 70%, rgba(34, 211, 238, .07) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    @media(max-width:860px) {
+      .hero-side {
+        display: none
+      }
+    }
+
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 2.5rem
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #7b68ee, #a78bfa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      box-shadow: 0 4px 20px rgba(123, 104, 238, .45);
+    }
+
+    .brand-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      background: linear-gradient(130deg, #c4b5fd, #7b68ee, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 1.25rem;
+      padding: 5px 14px;
+      border-radius: 20px;
+      background: rgba(123, 104, 238, .15);
+      border: 1px solid rgba(123, 104, 238, .25);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent2);
+      font-family: 'Syne', sans-serif;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .hero-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: blink 2s ease-in-out infinite
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+
+    .hero-h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -.03em;
+      margin-bottom: 1.1rem;
+      background: linear-gradient(130deg, #fff 0%, #c4b5fd 45%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    [data-theme="light"] .hero-h1 {
+      background: linear-gradient(130deg, #1a1523 0%, #4f46e5 45%, #2563eb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-p {
+      font-size: 14px;
+      color: var(--text2);
+      line-height: 1.75;
+      margin-bottom: 2rem;
+      max-width: 380px
+    }
+
+    /* Feature list */
+    .feature-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 2.5rem
+    }
+
+    .feat {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px
+    }
+
+    .feat-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      flex-shrink: 0;
+      background: rgba(123, 104, 238, .15);
+      border: 1px solid rgba(123, 104, 238, .2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      margin-top: 1px;
+    }
+
+    .feat-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 1px
+    }
+
+    .feat-sub {
+      font-size: 12px;
+      color: var(--text3);
+      line-height: 1.5
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap
+    }
+
+    .stat-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px 16px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .03);
+      border: 1px solid rgba(255, 255, 255, .07);
+      backdrop-filter: blur(8px);
+      text-align: center;
+    }
+
+    [data-theme="light"] .stat-pill {
+      background: rgba(79, 70, 229, .05);
+      border-color: rgba(79, 70, 229, .1)
+    }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--accent2)
+    }
+
+    .stat-lbl {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      margin-top: 2px;
+      font-family: 'Syne', sans-serif
+    }
+
+    /* Testimonial */
+    .testimonial {
+      margin-top: 2rem;
+      padding: 14px 16px;
+      background: rgba(123, 104, 238, .06);
+      border: 1px solid rgba(123, 104, 238, .12);
+      border-radius: 14px;
+    }
+
+    .t-quote {
+      font-size: 13px;
+      color: var(--text2);
+      line-height: 1.65;
+      font-style: italic;
+      margin-bottom: 8px
+    }
+
+    .t-author {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent2);
+      font-family: 'Syne', sans-serif
+    }
+
+    /* ── Form side ── */
+    .form-side {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    .form-card {
+      width: 100%;
+      max-width: 430px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      backdrop-filter: blur(22px);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .5), 0 0 60px rgba(123, 104, 238, .08);
+      animation: cardIn .5s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    /* Mobile brand */
+    .mobile-brand {
+      display: none;
+      text-align: center;
+      margin-bottom: 1.5rem
+    }
+
+    @media(max-width:860px) {
+      .mobile-brand {
+        display: block
+      }
+    }
+
+    .mobile-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, #7b68ee, #a78bfa);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-bottom: .5rem;
+      box-shadow: 0 4px 16px rgba(123, 104, 238, .4)
+    }
+
+    .mobile-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      background: linear-gradient(130deg, #c4b5fd, #7b68ee, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text
+    }
+
+    /* Role tabs */
+    .role-tabs {
+      display: flex;
+      gap: 4px;
+      background: rgba(255, 255, 255, .04);
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 14px;
+      padding: 4px;
+      margin-bottom: 1.5rem
+    }
+
+    [data-theme="light"] .role-tabs {
+      background: rgba(79, 70, 229, .06);
+      border-color: rgba(79, 70, 229, .12)
+    }
+
+    .role-tab {
+      flex: 1;
+      padding: 9px 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Syne', sans-serif;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      transition: all .25s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      color: var(--text3);
+      background: transparent
+    }
+
+    .role-tab.active.user-tab {
+      background: linear-gradient(135deg, rgba(123, 104, 238, .4), rgba(167, 139, 250, .25));
+      color: var(--accent2);
+      box-shadow: 0 2px 12px rgba(123, 104, 238, .25);
+      border: 1px solid rgba(123, 104, 238, .25)
+    }
+
+    .role-tab.active.admin-tab {
+      background: linear-gradient(135deg, rgba(34, 211, 238, .25), rgba(96, 165, 250, .2));
+      color: #67e8f9;
+      box-shadow: 0 2px 12px rgba(34, 211, 238, .2);
+      border: 1px solid rgba(34, 211, 238, .2)
+    }
+
+    .role-tab:not(.active):hover {
+      background: rgba(255, 255, 255, .06);
+      color: var(--text2)
+    }
+
+    /* Panel indicator */
+    .p-ind {
+      margin-bottom: 1rem;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      font-family: 'Syne', sans-serif
+    }
+
+    .p-ind.u {
+      background: rgba(123, 104, 238, .1);
+      border: 1px solid rgba(123, 104, 238, .18);
+      color: var(--accent2)
+    }
+
+    .p-ind.a {
+      background: rgba(34, 211, 238, .08);
+      border: 1px solid rgba(34, 211, 238, .18);
+      color: var(--cyan)
+    }
+
+    /* Flash */
+    .flash {
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      margin-bottom: .75rem;
+      line-height: 1.5
+    }
+
+    .flash.error {
+      background: rgba(248, 113, 113, .1);
+      border: 1px solid rgba(248, 113, 113, .2);
+      color: var(--red)
+    }
+
+    .flash.success {
+      background: rgba(52, 211, 153, .1);
+      border: 1px solid rgba(52, 211, 153, .2);
+      color: var(--green)
+    }
+
+    .flash.info {
+      background: rgba(123, 104, 238, .1);
+      border: 1px solid rgba(123, 104, 238, .2);
+      color: var(--accent2)
+    }
+
+    /* Fields */
+    .field {
+      margin-bottom: .9rem
+    }
+
+    label {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      margin-bottom: 5px;
+      font-family: 'Syne', sans-serif
+    }
+
+    input[type=text],
+    input[type=password] {
+      width: 100%;
+      padding: 11px 14px;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 11px;
+      font-size: 14px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      outline: none;
+      transition: all .2s;
+    }
+
+    input:focus {
+      border-color: rgba(123, 104, 238, .5);
+      background: rgba(123, 104, 238, .07);
+      box-shadow: 0 0 0 3px rgba(123, 104, 238, .1)
+    }
+
+    input.af:focus {
+      border-color: rgba(34, 211, 238, .4);
+      background: rgba(34, 211, 238, .05);
+      box-shadow: 0 0 0 3px rgba(34, 211, 238, .08)
+    }
+
+    input::placeholder {
+      color: var(--text3)
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      transition: all .25s;
+      background: linear-gradient(135deg, #7b68ee, #a78bfa, #60a5fa);
+      background-size: 200% 200%;
+      animation: gm 4s ease infinite;
+      box-shadow: 0 4px 20px rgba(123, 104, 238, .4);
+      margin-top: .5rem;
+    }
+
+    .btn.ab {
+      background: linear-gradient(135deg, #22d3ee, #7b68ee, #a78bfa);
+      box-shadow: 0 4px 20px rgba(34, 211, 238, .3)
+    }
+
+    @keyframes gm {
+
+      0%,
+      100% {
+        background-position: 0% 50%
+      }
+
+      50% {
+        background-position: 100% 50%
+      }
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(123, 104, 238, .55)
+    }
+
+    /* Links */
+    .links-row {
+      display: flex;
+      justify-content: space-between;
+      margin-top: .6rem;
+      flex-wrap: wrap;
+      gap: 4px
+    }
+
+    .lnk {
+      font-size: 12px;
+      color: var(--accent2);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color .15s
+    }
+
+    .lnk:hover {
+      color: var(--text)
+    }
+
+    .lnk.al {
+      color: var(--cyan)
+    }
+
+    .altl {
+      text-align: center;
+      margin-top: 1.25rem;
+      font-size: 13px;
+      color: var(--text3)
+    }
+
+    .altl a {
+      color: var(--accent2);
+      text-decoration: none;
+      font-weight: 600
+    }
+
+    .altl a:hover {
+      color: var(--text)
+    }
+
+    /* Admin hint */
+    .adm-hint {
+      margin-top: .6rem;
+      padding: 10px 13px;
+      background: rgba(34, 211, 238, .05);
+      border: 1px solid rgba(34, 211, 238, .12);
+      border-radius: 10px;
+      font-size: 12px;
+      color: var(--text3);
+      line-height: 1.5
+    }
+
+    .adm-hint strong {
+      color: var(--cyan)
+    }
+
+    /* Password eye toggle */
+    .pw-field-wrap {
+      position: relative;
+      display: block
+    }
+
+    .pw-field-wrap input {
+      padding-right: 42px !important
+    }
+
+    .pw-eye-btn {
+      position: absolute;
+      right: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px;
+      border-radius: 6px;
+      transition: color .2s, background .2s;
+      line-height: 1;
+      z-index: 2
+    }
+
+    .pw-eye-btn:hover {
+      color: var(--accent2);
+      background: rgba(123, 104, 238, .1)
+    }
+
+    [data-theme="light"] .pw-eye-btn:hover {
+      background: rgba(79, 70, 229, .08)
+    }
+
+    .pw-eye-btn svg {
+      display: block;
+      pointer-events: none
+    }
+
+    /* Confirm overlay / modal */
+    .confirm-overlay{display:none;position:fixed;inset:0;background:rgba(7,8,15,.82);backdrop-filter:blur(14px);z-index:1100;align-items:center;justify-content:center}
+    [data-theme="light"] .confirm-overlay{background:rgba(80,70,130,.3)}
+    .confirm-box{background:rgba(14,15,28,.97);border:1px solid rgba(123,104,238,.22);border-radius:24px;padding:2.5rem 2rem;width:90%;max-width:400px;text-align:center;box-shadow:0 40px 80px rgba(0,0,0,.7),0 0 60px rgba(123,104,238,.12);animation:cboxIn .3s cubic-bezier(.34,1.56,.64,1)}
+    [data-theme="light"] .confirm-box{background:rgba(250,249,255,.99);border-color:rgba(79,70,229,.18);box-shadow:0 20px 60px rgba(0,0,0,.12),0 0 40px rgba(79,70,229,.08)}
+    @keyframes cboxIn{from{opacity:0;transform:scale(.88) translateY(24px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .confirm-icon{width:64px;height:64px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:1.25rem}
+    .confirm-icon-warn{background:rgba(251,191,36,.15);border:2px solid rgba(251,191,36,.3);color:#fbbf24}
+    .confirm-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--text);margin-bottom:.6rem}
+    .confirm-sub{font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:1.5rem}
+    .confirm-actions{display:flex;gap:10px;margin-top:1.5rem;justify-content:center}
+    .confirm-btn-cancel{padding:11px 24px;border-radius:11px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .2s}
+    .confirm-btn-cancel:hover{background:rgba(255,255,255,.1);color:var(--text)}
+    [data-theme="light"] .confirm-btn-cancel{border-color:rgba(0,0,0,.1);background:rgba(0,0,0,.04);color:var(--text2)}
+    [data-theme="light"] .confirm-btn-cancel:hover{background:rgba(0,0,0,.08);color:var(--text)}
+    .confirm-btn-ok{padding:11px 24px;border:none;border-radius:11px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:.05em;cursor:pointer;transition:all .2s}
+    .confirm-btn-warn{background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;box-shadow:0 4px 16px rgba(245,158,11,.35)}
+    .confirm-btn-warn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(245,158,11,.45)}
+    .email-domain-warn-inline{display:none;font-size:11px;color:var(--amber);margin-top:4px;padding:6px 10px;border-radius:8px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.18)}
+
+    /* Footer */
+    .page-footer {
+      position: fixed;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      color: var(--text3);
+      white-space: nowrap;
+      z-index: 10;
+      text-align: center
+    }
+  </style>
+</head>
+
+<body>
+
+  <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">🌙</button>
+
+  <div class="page-wrap">
+
+    <!-- ══ HERO SIDE ══════════════════════════════════════════════ -->
+    <div class="hero-side">
+      <div class="brand-row">
+        <div class="brand-icon">🤖</div>
+        <div class="brand-name">PrepEdge AI</div>
+      </div>
+
+      <div class="hero-tag">
+        <div class="hero-dot"></div>AI-Powered Interview Prep
+      </div>
+
+      <h1 class="hero-h1">Ace Every Interview<br>With AI Coaching</h1>
+
+      <p class="hero-p">
+        PrepEdge AI generates role-specific interview questions, conducts full mock interviews with real-time speech
+        recognition, and gives you instant AI feedback — all in one intelligent platform.
+      </p>
+
+      <div class="feature-list">
+        <div class="feat">
+          <div class="feat-icon">✨</div>
+          <div>
+            <div class="feat-title">Smart Question Generation</div>
+            <div class="feat-sub">AI crafts tailored questions for any role, experience level, and category — every
+              session is unique.</div>
+          </div>
+        </div>
+        <div class="feat">
+          <div class="feat-icon">🎤</div>
+          <div>
+            <div class="feat-title">Live Mock Interviews</div>
+            <div class="feat-sub">Speak your answers aloud — real-time transcription captures every word with instant AI
+              scoring.</div>
+          </div>
+        </div>
+        <div class="feat">
+          <div class="feat-icon">📊</div>
+          <div>
+            <div class="feat-title">Performance Analytics</div>
+            <div class="feat-sub">Track your progress across roles and sessions with detailed charts and personalised
+              insights.</div>
+          </div>
+        </div>
+        <div class="feat">
+          <div class="feat-icon">📄</div>
+          <div>
+            <div class="feat-title">PDF & Email Reports</div>
+            <div class="feat-sub">Export your full session report — questions, scores, and tips — as a PDF or email it
+              instantly.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-pill">
+          <div class="stat-num">50+</div>
+          <div class="stat-lbl">Job Roles</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-num">4</div>
+          <div class="stat-lbl">Difficulty Levels</div>
+        </div>
+        <div class="stat-pill">
+          <div class="stat-num">AI</div>
+          <div class="stat-lbl">Evaluation</div>
+        </div>
+      </div>
+
+      <div class="testimonial">
+        <div class="t-quote">"This platform transformed how I prepare for interviews. The AI feedback is shockingly
+          accurate and the mock interview mode is just like the real thing."</div>
+        <div class="t-author">— Software Engineer, got offer at a FAANG company</div>
+      </div>
+    </div>
+
+    <!-- ══ FORM SIDE ══════════════════════════════════════════════ -->
+    <div class="form-side">
+      <div class="form-card">
+        <!-- Mobile brand (only shows on small screens) -->
+        <div class="mobile-brand">
+          <div class="mobile-icon">🤖</div>
+          <div class="mobile-name">PrepEdge AI</div>
+        </div>
+
+        <!-- Role Tabs -->
+        <div class="role-tabs">
+          <button class="role-tab user-tab active" id="tab-user" onclick="switchTab('user')">
+            <span>👤</span> User
+          </button>
+          <button class="role-tab admin-tab" id="tab-admin" onclick="switchTab('admin')">
+            <span>⚙️</span> Admin
+          </button>
+        </div>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+        <div class="flash {{ cat }}">{{ msg | safe }}</div>
+        {% endfor %}
+        {% endwith %}
+
+        <!-- User Login Panel -->
+        <div id="panel-user">
+          <div class="p-ind u">🧑‍💻 User Login — Start your interview prep</div>
+          <form method="POST" action="{{ url_for('login') }}">
+            <input type="hidden" name="login_type" value="user" />
+            <div class="field">
+              <label>Username or Email</label>
+              <input type="text" name="username" value="{{ username }}" placeholder="johndoe or john@email.com" required
+                autocomplete="username" />
+            </div>
+            <div class="field">
+              <label>Password</label>
+              <div class="pw-field-wrap">
+                <input type="password" id="user-pw" name="password" placeholder="Your password" required
+                  autocomplete="current-password" />
+              </div>
+            </div>
+            <button type="submit" class="btn">🚀 Sign In</button>
+            <div class="links-row">
+              <a href="{{ url_for('forgot_password') }}" class="lnk">Forgot password?</a>
+            </div>
+          </form>
+        </div>
+
+        <!-- Admin Login Panel -->
+        <div id="panel-admin" style="display:none">
+          <div class="p-ind a">⚙️ Admin Login — Dashboard access</div>
+          <form method="POST" action="{{ url_for('login') }}">
+            <input type="hidden" name="login_type" value="admin" />
+            <div class="field">
+              <label>Admin Username</label>
+              <input type="text" name="username" placeholder="admin" required autocomplete="username" class="af" />
+            </div>
+            <div class="field">
+              <label>Admin Password</label>
+              <div class="pw-field-wrap">
+                <input type="password" id="admin-pw" name="password" placeholder="Admin password" required
+                  autocomplete="current-password" class="af" />
+              </div>
+            </div>
+            <button type="submit" class="btn ab">⚙️ Admin Sign In</button>
+            <div class="links-row">
+              <a href="{{ url_for('admin_forgot_password_page') }}" class="lnk al">Forgot admin password?</a>
+            </div>
+          </form>
+          <div class="adm-hint">
+            <strong>Default:</strong> username <code>admin</code> / password <code>Admin@1234</code> — change after
+            first login.
+          </div>
+        </div>
+
+        <div class="altl" id="reg-link">New here? <a href="{{ url_for('register') }}">Create a free account</a></div>
+        
+        <div class="altl" style="margin-top:20px; padding-top:20px; border-top:1px solid var(--border); display:flex; gap:15px; justify-content:center;">
+          <a href="#" onclick="openFaqModal(); return false;" class="lnk">FAQ</a>
+          <a href="#" onclick="openContactModal('Contact Request'); return false;" class="lnk">Contact Admin</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ Modal -->
+  <div id="faq-modal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); backdrop-filter:blur(5px); z-index:999; align-items:center; justify-content:center;">
+    <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:16px; width:90%; max-width:500px; padding:2rem; position:relative;">
+      <button onclick="closeFaqModal()" style="position:absolute; top:15px; right:15px; background:transparent; border:none; color:var(--text2); font-size:18px; cursor:pointer;">&times;</button>
+      <h2 style="font-family:Syne; margin-bottom:1rem; color:var(--text);">Frequently Asked Questions</h2>
+      <div style="margin-bottom:1rem;">
+        <h4 style="color:var(--accent2); margin-bottom:5px;">How do I reset my password?</h4>
+        <p style="font-size:13px; color:var(--text3);">Click on "Forgot password?" and follow the instructions to receive an OTP.</p>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <h4 style="color:var(--accent2); margin-bottom:5px;">My account is blocked. What should I do?</h4>
+        <p style="font-size:13px; color:var(--text3);">Use the Contact Admin link and submit an Unblock Request. An admin will review it soon.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Modal -->
+  <div id="contact-modal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.89); backdrop-filter:blur(5px); z-index:999; align-items:center; justify-content:center;">
+    <div style="background:var(--card-bg); border:1px solid var(--border); border-radius:16px; width:90%; max-width:400px; padding:2rem; position:relative;">
+      <button onclick="closeContactModal()" style="position:absolute; top:15px; right:15px; background:transparent; border:none; color:var(--text2); font-size:18px; cursor:pointer;">&times;</button>
+      <h2 style="font-family:Syne; margin-bottom:1rem; color:var(--text);" id="contact-title">Contact Admin</h2>
+      <form id="contact-form" onsubmit="submitContactRequest(event)">
+        <input type="hidden" id="contact-type" value="Contact Request">
+        <div class="field">
+          <label>Username <span style="color:var(--red);">*</span></label>
+          <input type="text" id="contact-username" placeholder="Your username" required>
+        </div>
+        <div class="field">
+          <label>Email <span style="color:var(--red);">*</span></label>
+          <input type="text" id="contact-email" placeholder="your.name@example.com" required oninput="validateEmail(this)">
+          <div id="email-error" style="color:var(--red); font-size:11px; margin-top:4px; display:none;"></div>
+          <div id="contact-email-domain-warn" class="email-domain-warn-inline">⚠️ This email uses an uncommon domain extension.</div>
+        </div>
+        <div class="field">
+          <label>Subject</label>
+          <input type="text" id="contact-subject" placeholder="What is this about?" required>
+        </div>
+        <div class="field">
+          <label>Message</label>
+          <textarea id="contact-message" placeholder="Describe your issue..." required style="width:100%; padding:11px 14px; background:var(--input-bg); border:1px solid var(--input-border); border-radius:11px; font-size:14px; color:var(--text); font-family:inherit; min-height:80px; resize:vertical;"></textarea>
+        </div>
+        <div id="contact-status" style="margin-bottom:10px; font-size:13px; font-weight:bold;"></div>
+        <button type="submit" class="btn" id="contact-submit-btn">Send Request</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Contact Email Warning Modal -->
+  <div id="contact-email-warning-modal" class="confirm-overlay" style="display:none">
+    <div class="confirm-box">
+      <div class="confirm-icon confirm-icon-warn">⚠️</div>
+      <h2 class="confirm-title">Uncommon email domain</h2>
+      <p class="confirm-sub" id="contact-email-warning-text">Your email does not use one of the commonly trusted domain extensions (.com, .net, .org, etc.). Are you sure you want to continue with this email?</p>
+      <div class="confirm-actions">
+        <button class="confirm-btn-cancel" onclick="cancelContactEmailWarning()">Cancel</button>
+        <button class="confirm-btn-ok confirm-btn-warn" onclick="continueContactEmailWarning()">Continue Anyway</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="page-footer">© 2026 PrepEdge AI · All rights reserved</div>
+
+  <script>
+    /* Theme */
+    (function () {
+      const t = localStorage.getItem('prepedge-theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', t);
+      const btn = document.getElementById('theme-btn');
+      if (btn) btn.textContent = t === 'light' ? '☀️' : '🌙';
+    })();
+    function toggleTheme() {
+      const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('prepedge-theme', next);
+      const btn = document.getElementById('theme-btn');
+      if (btn) btn.textContent = next === 'light' ? '☀️' : '🌙';
+    }
+
+    function switchTab(type) {
+      const isAdmin = type === 'admin';
+      document.getElementById('tab-user').classList.toggle('active', !isAdmin);
+      document.getElementById('tab-admin').classList.toggle('active', isAdmin);
+      document.getElementById('panel-user').style.display = isAdmin ? 'none' : '';
+      document.getElementById('panel-admin').style.display = isAdmin ? '' : 'none';
+      document.getElementById('reg-link').style.display = isAdmin ? 'none' : '';
+      setTimeout(() => {
+        const first = isAdmin
+          ? document.querySelector('#panel-admin input[type=text]')
+          : document.querySelector('#panel-user input[type=text]');
+        first?.focus();
+      }, 80);
+    }
+    /* Restore admin tab if redirected with ?mode=admin */
+    if (new URLSearchParams(window.location.search).get('mode') === 'admin') switchTab('admin');
+
+    /* ── Password show/hide toggles ───────────────────────── */
+    const EYE_OPEN = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+    const EYE_SHUT = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+
+    function attachPwToggle(inputId) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'pw-eye-btn';
+      btn.setAttribute('aria-label', 'Show password');
+      btn.setAttribute('aria-pressed', 'false');
+      btn.innerHTML = EYE_OPEN;
+      input.parentNode.appendChild(btn);
+      btn.addEventListener('click', function () {
+        const show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.innerHTML = show ? EYE_SHUT : EYE_OPEN;
+        btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+        btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+      });
+    }
+
+    attachPwToggle('user-pw');
+    attachPwToggle('admin-pw');
+    
+    /* FAQ & Contact Modal logic */
+    function openFaqModal() {
+      document.getElementById('faq-modal').style.display = 'flex';
+    }
+    function closeFaqModal() {
+      document.getElementById('faq-modal').style.display = 'none';
+    }
+    function openContactModal(type) {
+      document.getElementById('contact-type').value = type;
+      document.getElementById('contact-title').innerText = type === 'Unblock Request' ? 'Request Unblock' : 'Contact Admin';
+      if (type === 'Unblock Request') {
+        document.getElementById('contact-subject').value = 'Unblock Request';
+      }
+      document.getElementById('contact-modal').style.display = 'flex';
+    }
+    function closeContactModal() {
+      document.getElementById('contact-modal').style.display = 'none';
+      document.getElementById('contact-status').innerText = '';
+    }
+    
+    /* ── Email validation for Contact form ─────────────────── */
+    const CONTACT_TRUSTED_DOMAINS = [
+      '.com', '.in', '.co', '.net', '.org', '.edu', '.gov', '.io',
+      '.ai', '.dev', '.tech', '.me', '.info', '.biz', '.co.in'
+    ];
+    let contactEmailConfirmed = false;
+
+    function validateEmail(input) {
+      const v = input.value.trim();
+      const errorDiv = document.getElementById('email-error');
+      const domainWarn = document.getElementById('contact-email-domain-warn');
+      contactEmailConfirmed = false; // reset on every keystroke
+      if(domainWarn) domainWarn.style.display = 'none';
+
+      if (!v) {
+        input.style.borderColor = 'var(--input-border)';
+        errorDiv.style.display = 'none';
+        return true; // empty is handled by "required"
+      }
+
+      let msg = '';
+      if (v.includes(' ')) { msg = 'Email must not contain spaces.'; }
+      else if (v.split('@').length !== 2) { msg = 'Email must contain exactly one @ symbol.'; }
+      else {
+        const parts = v.split('@');
+        const local = parts[0], domain = parts[1];
+        if (!local) { msg = 'Local part before @ must not be empty.'; }
+        else if (!domain) { msg = 'Domain part after @ must not be empty.'; }
+        else if (local.startsWith('.') || local.endsWith('.')) { msg = 'Email cannot start or end with a dot before @.'; }
+        else if (/\.{2,}/.test(local)) { msg = 'Email cannot have consecutive dots before @.'; }
+        else if (!/^[a-zA-Z0-9._%+\-]+$/.test(local)) { msg = 'Email contains invalid characters before @.'; }
+        else if (!/^[a-zA-Z0-9.\-]+$/.test(domain)) { msg = 'Domain contains invalid characters.'; }
+        else if (!domain.includes('.')) { msg = 'Domain must include a dot (e.g., gmail.com).'; }
+        else {
+          const tld = domain.substring(domain.lastIndexOf('.'));
+          if (tld.length < 3) { msg = 'Domain extension is too short (min 2 letters).'; }
+          else if (!/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/.test(v)) { msg = 'Please enter a valid email address.'; }
+        }
+      }
+
+      if (msg) {
+        input.style.borderColor = 'var(--red)';
+        errorDiv.textContent = msg;
+        errorDiv.style.display = 'block';
+        return false;
+      }
+
+      input.style.borderColor = 'rgba(52,211,153,.4)';
+      errorDiv.style.display = 'none';
+
+      // Show inline domain warning for uncommon extensions
+      const emailLower = v.toLowerCase();
+      const hasTrusted = CONTACT_TRUSTED_DOMAINS.some(ext => emailLower.endsWith(ext));
+      if (!hasTrusted && domainWarn) {
+        domainWarn.style.display = 'block';
+      }
+      return true;
+    }
+
+    /* ── Domain warning modal helpers ─────────────────────── */
+    function cancelContactEmailWarning() {
+      document.getElementById('contact-email-warning-modal').style.display = 'none';
+      const btn = document.getElementById('contact-submit-btn');
+      btn.disabled = false;
+      btn.innerText = 'Send Request';
+    }
+
+    function continueContactEmailWarning() {
+      document.getElementById('contact-email-warning-modal').style.display = 'none';
+      contactEmailConfirmed = true;
+      _executeContactSubmit();
+    }
+
+    /* ── Submit contact request ───────────────────────────── */
+    async function submitContactRequest(e) {
+      e.preventDefault();
+      const emailInput = document.getElementById('contact-email');
+      if (!validateEmail(emailInput)) {
+        return;
+      }
+
+      // Check domain — prompt warning if uncommon and not yet confirmed
+      const emailLower = emailInput.value.trim().toLowerCase();
+      const hasTrusted = CONTACT_TRUSTED_DOMAINS.some(ext => emailLower.endsWith(ext));
+      if (!hasTrusted && !contactEmailConfirmed) {
+        const domain = emailLower.split('@')[1] || '';
+        document.getElementById('contact-email-warning-text').innerHTML =
+          `Your email uses the domain <strong>${domain}</strong>, which is not among the commonly trusted extensions (.com, .net, .org, etc.).<br><br>Do you still want to continue with this email?`;
+        document.getElementById('contact-email-warning-modal').style.display = 'flex';
+        return;
+      }
+
+      _executeContactSubmit();
+    }
+
+    async function _executeContactSubmit() {
+      const btn = document.getElementById('contact-submit-btn');
+      const status = document.getElementById('contact-status');
+      
+      const payload = {
+        username: document.getElementById('contact-username').value,
+        email: document.getElementById('contact-email').value,
+        subject: document.getElementById('contact-subject').value,
+        message: document.getElementById('contact-message').value,
+        request_type: document.getElementById('contact-type').value
+      };
+      
+      btn.disabled = true;
+      btn.innerText = 'Sending...';
+      
+      try {
+        const res = await fetch('/contact_admin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          status.style.color = 'var(--green)';
+          status.innerText = data.message;
+          contactEmailConfirmed = false;
+          setTimeout(() => {
+            closeContactModal();
+            document.getElementById('contact-form').reset();
+            document.getElementById('contact-email-domain-warn').style.display = 'none';
+            btn.disabled = false;
+            btn.innerText = 'Send Request';
+          }, 2000);
+        } else {
+          status.style.color = 'var(--red)';
+          status.innerText = data.error || 'Failed to send request.';
+          btn.disabled = false;
+          btn.innerText = 'Send Request';
+        }
+      } catch (err) {
+        status.style.color = 'var(--red)';
+        status.innerText = 'Network error.';
+        btn.disabled = false;
+        btn.innerText = 'Send Request';
+      }
+    }
+  </script>
+</body>
+
+</html>
