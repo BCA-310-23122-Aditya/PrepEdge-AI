@@ -31,8 +31,22 @@ with your actual key.
     ├── database.py      → SQLite: save sessions, history, ratings
     ├── requirements.txt → Python dependencies
     ├── questions.db     → Auto-created on first run
+    ├── email_utils.py
+    ├── resume_analyzer.py
     └── templates/
         └── index.html   → Complete frontend UI
+        └── admin.html
+        └── admin_profile.html
+        └── admin_users.html
+        └── forgot_password.html
+        └── landing.html
+        └── login.html
+        └── register.html
+        └── results.html
+        └── user_dashboard.html
+    └── static/
+        └── script.js
+        └── style.css
 
 ## Features
 - Generate 5–20 interview questions for any job role
@@ -47,6 +61,6 @@ with your actual key.
 - Fully responsive mobile UI
 
 ## Tech Stack
-- Backend: Python 3.10+, Flask, google-generativeai, SQLite3
+- Backend: Python 3.10+, Flask, google-generativeai, MySQL
 - Frontend: HTML5, CSS3, Vanilla JavaScript
 - AI: Google Gemini 1.5 Flash (free tier)
